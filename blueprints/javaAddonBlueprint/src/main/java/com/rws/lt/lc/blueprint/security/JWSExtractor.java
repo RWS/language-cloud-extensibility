@@ -50,7 +50,6 @@ public class JWSExtractor {
     public static final String LC_SIGNATURE_HEADER = "x-lc-signature";
 
     static final String ILLEGAL_JWS_AUTH_EXCEPTION_MESSAGE = "Authentication failed.";
-    public static final String PRINCIPAL_TYPE_LC = "LC";
     protected static final String EMPTY_PAYLOAD_HASH = "47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU";
 
     @Value("${authentication.jws.verify.leewayInSeconds:60}")
