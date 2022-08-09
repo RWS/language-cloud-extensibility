@@ -161,7 +161,7 @@ public class AccountSettingsServiceTest {
     }
 
     @Test
-    public void testActivatedAddonEvent() throws ValidationException {
+    public void testActivatedAddonEvent() {
         ActivatedEvent event = new ActivatedEvent();
         event.setTimestamp(Long.toString(System.currentTimeMillis()));
         ActivatedEventDetails details = new ActivatedEventDetails();
@@ -183,8 +183,8 @@ public class AccountSettingsServiceTest {
         assertThat(clientCredentials.getClientSecret(), is("clientSecret1"));
     }
 
-    @Test(expected = ValidationException.class)
-    public void testActivatedAddonEventAlreadyActivated() throws ValidationException {
+    @Test
+    public void testActivatedAddonEventAlreadyActivated() {
         ActivatedEvent event = new ActivatedEvent();
         event.setTimestamp(Long.toString(System.currentTimeMillis()));
         ActivatedEventDetails details = new ActivatedEventDetails();
@@ -193,6 +193,8 @@ public class AccountSettingsServiceTest {
 
         when(settingsRepository.findAccountSettings(eq(ACCOUNT_ID))).thenReturn(new AccountSettings());
         accountSettingsService.handleAddonEvent((AddonLifecycleEvent) event);
+
+        verify(settingsRepository, never()).save(any());
     }
 
     @Test

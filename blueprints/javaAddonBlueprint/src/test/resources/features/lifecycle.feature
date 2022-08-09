@@ -20,13 +20,12 @@ Feature:  lifecycle
     When I deactivate the addon
     Then Last response status code is 200
 
-  Scenario: I can only activate an account that hasn't been activated before
+  Scenario: I can activate an account that has been activated before
     When I deactivate the addon
     When I activate the addon
     Then Last response status code is 200
     When I activate the addon
-    Then Last response status code is 422
-    And Last error message contains "Account already activated"
+    Then Last response status code is 200
 #    After I deactivate the addon I can reactivate it
     When I deactivate the addon
     When I activate the addon

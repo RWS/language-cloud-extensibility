@@ -1,6 +1,5 @@
 package com.rws.lt.lc.blueprint.web;
 
-import com.rws.lt.lc.blueprint.exception.ValidationException;
 import com.rws.lt.lc.blueprint.service.AccountSettingsService;
 import com.rws.lt.lc.blueprint.transfer.lifecycle.AddonLifecycleEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,7 @@ public class LifecycleController {
     private AccountSettingsService accountSettingsService;
 
     @PostMapping("/addon-lifecycle")
-    public void addonLifecycleEvent(@RequestBody @Valid AddonLifecycleEvent lifecycleEvent) throws ValidationException {
+    public void addonLifecycleEvent(@RequestBody @Valid AddonLifecycleEvent lifecycleEvent) {
         LOGGER.info("addonLifecycleEvent >> with type {} at {}", lifecycleEvent.getId(), lifecycleEvent.getTimestamp());
         accountSettingsService.handleAddonEvent(lifecycleEvent);
     }

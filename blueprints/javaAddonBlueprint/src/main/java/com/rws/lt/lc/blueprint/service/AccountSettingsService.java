@@ -35,7 +35,7 @@ public class AccountSettingsService {
         this.metadataService = metadataService;
     }
 
-    public void handleAddonEvent(AddonLifecycleEvent lifecycleEvent) throws ValidationException {
+    public void handleAddonEvent(AddonLifecycleEvent lifecycleEvent) {
         LOGGER.debug("addonLifecycleEvent >> with type {} at {}", lifecycleEvent.getId(), lifecycleEvent.getTimestamp());
         if (lifecycleEvent instanceof ActivatedEvent) {
             handleAddonEvent((ActivatedEvent) lifecycleEvent);
@@ -44,13 +44,14 @@ public class AccountSettingsService {
         }
     }
 
-    public void handleAddonEvent(ActivatedEvent lifecycleEvent) throws ValidationException {
+    public void handleAddonEvent(ActivatedEvent lifecycleEvent) {
         LOGGER.debug("handleAddonEvent >> for tenantId {} ", RequestLocalContext.getActiveAccountId());
         ActivatedEventDetails details = lifecycleEvent.getData();
         String tenantId = RequestLocalContext.getActiveAccountId();
         AccountSettings entity = accountSettingsRepository.findAccountSettings(tenantId);
         if (entity != null) {
-            throw new ValidationException("Account already activated");
+            LOGGER.debug("Add-on already activated for tenantId {}", tenantId);
+            return;
         }
 
         entity = new AccountSettings();
