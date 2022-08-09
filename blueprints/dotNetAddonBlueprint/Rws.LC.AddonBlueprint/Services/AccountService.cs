@@ -59,7 +59,7 @@ namespace Rws.LC.AddonBlueprint.Services
             var accountInfo = await _repository.GetAccountInfoByTenantId(tenantId).ConfigureAwait(false);
             if (accountInfo != null)
             {
-                throw new AccountValidationException($"Account {tenantId} is already activated.", new Details { Code = ErrorCodes.AccountAlreadyActivated, Name = nameof(tenantId), Value = tenantId });
+                return;
             }
 
             await _repository.SaveAccount(accountInfoEntity).ConfigureAwait(false);

@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="Rws.LanguageCloud.Authentication.Jws" Version="1.0.2" />
+	<PackageReference Include="Rws.LanguageCloud.Authentication.Jws" Version="1.0.4" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.1" />
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" />
