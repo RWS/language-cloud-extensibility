@@ -1,0 +1,22 @@
+{
+  "profiles": {
+    "Rws.LC.MTSampleAddon": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "v1/descriptor",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5000"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/v1/descriptor",
+      "environmentVariables": {
+        "ASPNETCORE_URLS": "http://+:80",
+        "LOG_LEVEL": "Debug"
+      }
+    }
+  }
+}
