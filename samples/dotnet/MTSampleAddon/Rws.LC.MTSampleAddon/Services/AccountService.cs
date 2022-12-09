@@ -62,6 +62,8 @@ namespace Rws.LC.MTSampleAddon.Services
                 return;
             }
 
+            // sensitive information such as the service account key(SAMPLE_ACCOUNT_SECRET) should be encrypted
+            // https://www.mongodb.com/docs/drivers/java/sync/current/fundamentals/csfle/#mongodb-crypt
             await _repository.SaveAccount(accountInfoEntity).ConfigureAwait(false);
         }
 
