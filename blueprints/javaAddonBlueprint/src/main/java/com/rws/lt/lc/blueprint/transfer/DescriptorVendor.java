@@ -6,4 +6,5 @@ import lombok.Getter;
 public class DescriptorVendor {
     private String name;
     private String url;
+    private String email;
 }
