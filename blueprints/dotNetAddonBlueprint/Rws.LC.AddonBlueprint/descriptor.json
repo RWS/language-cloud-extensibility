@@ -56,7 +56,9 @@
 		"documentation": "/v1/documentation",
 		"addonLifecycle": "/v1/addon-lifecycle",
 		"configuration": "/v1/configuration",
-		"configurationValidation": "/v1/configuration/validation"
+		"configurationValidation": "/v1/configuration/validation",
+		"privacyPolicy": "/v1/privacyPolicy",
+		"termsAndConditions": "/v1/termsAndConditions"
 	},
 	"configurations": [
 		// configuration exmaple
@@ -72,7 +74,8 @@
 	"minimumVersion": "1.0.0",
 	"vendor": {
 		"name": "SAMPLE_VENDOR_NAME",
-		"url": "SAMPLE_VENDOR_URL"
+		"url": "SAMPLE_VENDOR_URL",
+		"email": "sample_vendor@email.com"
 	},
-	"descriptorVersion": "1.2"
+	"descriptorVersion": "1.3"
 }

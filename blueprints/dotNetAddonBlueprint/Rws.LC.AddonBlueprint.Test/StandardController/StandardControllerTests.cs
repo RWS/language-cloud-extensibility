@@ -61,13 +61,15 @@ namespace Rws.LC.AddonBlueprint.Test.StandardController
             var descriptor = JsonSerializer.Deserialize<AddonDescriptorModel>((response as ContentResult).Content, JsonSettings.Default());
             Assert.Equal(_configuration["baseUrl"], descriptor.BaseUrl);
             Assert.Equal("1.0.0", descriptor.Version);
-            Assert.Equal("1.2", descriptor.DescriptorVersion);
+            Assert.Equal("1.3", descriptor.DescriptorVersion);
             Assert.Equal(2, descriptor.Extensions.Count);
             Assert.Equal("/v1/health", descriptor.StandardEndpoints.Health);
             Assert.Equal("/v1/documentation", descriptor.StandardEndpoints.Documentation);
             Assert.Equal("/v1/addon-lifecycle", descriptor.StandardEndpoints.AddonLifecycle);
             Assert.Equal("/v1/configuration", descriptor.StandardEndpoints.Configuration);
             Assert.Equal("/v1/configuration/validation", descriptor.StandardEndpoints.ConfigurationValidation);
+            Assert.Equal("/v1/privacyPolicy", descriptor.StandardEndpoints.PrivacyPolicy);
+            Assert.Equal("/v1/termsAndConditions", descriptor.StandardEndpoints.TermsAndConditions);
             Assert.Single(descriptor.Configurations);
         }
 

@@ -31,5 +31,15 @@
         /// The icon endpoint.
         /// </summary>
         public string Icon { get; set; }
+
+        /// <summary>
+        /// The privacy policy endpoint.
+        /// </summary>
+        public string PrivacyPolicy { get; set; }
+
+        /// <summary>
+        /// The terms and conditions endpoint.
+        /// </summary>
+        public string TermsAndConditions { get; set; }
     }
 }

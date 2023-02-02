@@ -246,5 +246,27 @@ namespace Rws.LC.AddonBlueprint.Controllers
 
             return Ok();
         }
+
+        /// <summary>
+        /// This endpoint provides the privacy policy for the Add-On. It can return the HTML page with the privacy policy
+        /// or redirect to a page. In this sample redirect is used the static file privacyPolicy.html.
+        /// </summary>
+        [HttpGet("privacyPolicy")]
+        public IActionResult PrivacyPolicy()
+        {
+            var html = System.IO.File.ReadAllText(@"./resources/privacyPolicy.html");
+            return base.Content(html, "text/html");
+        }
+
+        /// <summary>
+        /// This endpoint provides the terms and conditions for the Add-On. It can return the HTML page with the terms and conditions
+        /// or redirect to a page. In this sample redirect is used the static file termsAndCondition.html.
+        /// </summary>
+        [HttpGet("termsAndConditions")]
+        public IActionResult TermsANdConditions()
+        {
+            var html = System.IO.File.ReadAllText(@"./resources/termsAndConditions.html");
+            return base.Content(html, "text/html");
+        }
     }
 }

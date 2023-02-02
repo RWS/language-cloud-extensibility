@@ -11,5 +11,10 @@ namespace Rws.LC.AddonBlueprint.Models
 		/// The url.
 		/// </summary>
 		public string Url { get; set; }
-	}
+
+        /// <summary>
+        /// The email.
+        /// </summary>
+        public string Email { get; set; }
+    }
 }
