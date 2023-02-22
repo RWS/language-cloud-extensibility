@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -83,19 +84,12 @@ namespace Rws.LC.AddonBlueprint.Controllers
             _logger.LogInformation("Entered Descriptor endpoint.");
 
             // Descriptor service will provide an object describing the descriptor.
-            AddonDescriptorModel descriptor = _descriptorService.GetDescriptor();
+            JsonNode descriptor = _descriptorService.GetDescriptor();
 
             // TODO: You might need to change the baseUrl in appsettings.json
-            descriptor.BaseUrl = _configuration["baseUrl"];
+            descriptor["baseUrl"] = _configuration["baseUrl"];
 
-            // newtonsoft used to serialize entity with object type
-            var jsonSettings = new Newtonsoft.Json.JsonSerializerSettings
-            {
-                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-                ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
-            };
-
-            return Content(Newtonsoft.Json.JsonConvert.SerializeObject(descriptor, jsonSettings), "application/json", Encoding.UTF8);
+            return Ok(descriptor);
         }
 
         /// <summary>

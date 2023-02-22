@@ -3,7 +3,6 @@
 	"version": "1.0.0",
 	"description": "Blueprint Addon",
 	"extensions": [
-		// MT Extension example
 		{
 			"id": "SAMPLE_MT_EXTENSION_ID",
 			"name": "SAMPLE_MT_EXTENSION_NAME",
@@ -15,10 +14,9 @@
 					"lc.mtprovider.translate": "/v1/translate",
 					"lc.mtprovider.engines": "/v1/translation-engines"
 				},
-				"format": "html" // or "bcm"
+				"format": "html"
 			}
 		},
-		// Automatic Task Extension example
 		{
 			"extensionPointId": "lc.automatictask",
 			"id": "SAMPLE_AUTOMATICTASK_EXTENSION_ID",
@@ -61,7 +59,6 @@
 		"termsAndConditions": "/v1/termsAndConditions"
 	},
 	"configurations": [
-		// configuration exmaple
 		{
 			"name": "SAMPLE_CONFIG_NAME",
 			"id": "SAMPLE_CONFIG_ID",

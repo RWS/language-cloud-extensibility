@@ -1,5 +1,6 @@
 ﻿using Rws.LC.AddonBlueprint.Models;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Rws.LC.AddonBlueprint.Interfaces
 {
@@ -12,7 +13,7 @@ namespace Rws.LC.AddonBlueprint.Interfaces
         /// Gets the descriptor.
         /// </summary>
         /// <returns></returns>
-        AddonDescriptorModel GetDescriptor();
+        JsonNode GetDescriptor();
 
         /// <summary>
         /// Gets the secret configurations ids.

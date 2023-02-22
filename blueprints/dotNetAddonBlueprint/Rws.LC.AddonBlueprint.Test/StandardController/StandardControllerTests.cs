@@ -7,13 +7,13 @@ using NSubstitute;
 using Rws.LC.AddonBlueprint.Helpers;
 using Rws.LC.AddonBlueprint.Interfaces;
 using Rws.LC.AddonBlueprint.Models;
-using Rws.LC.AddonBlueprint.Services;
 using Rws.LC.AddonBlueprint.Test.Helpers;
 using System;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -56,21 +56,21 @@ namespace Rws.LC.AddonBlueprint.Test.StandardController
         {
             var standardController = BuildStandardController(new DefaultHttpContext());
 
-            var response = standardController.Descriptor();
+            var result = standardController.Descriptor();
+            var descriptor = (result as OkObjectResult).Value as JsonNode;
 
-            var descriptor = JsonSerializer.Deserialize<AddonDescriptorModel>((response as ContentResult).Content, JsonSettings.Default());
-            Assert.Equal(_configuration["baseUrl"], descriptor.BaseUrl);
-            Assert.Equal("1.0.0", descriptor.Version);
-            Assert.Equal("1.3", descriptor.DescriptorVersion);
-            Assert.Equal(2, descriptor.Extensions.Count);
-            Assert.Equal("/v1/health", descriptor.StandardEndpoints.Health);
-            Assert.Equal("/v1/documentation", descriptor.StandardEndpoints.Documentation);
-            Assert.Equal("/v1/addon-lifecycle", descriptor.StandardEndpoints.AddonLifecycle);
-            Assert.Equal("/v1/configuration", descriptor.StandardEndpoints.Configuration);
-            Assert.Equal("/v1/configuration/validation", descriptor.StandardEndpoints.ConfigurationValidation);
-            Assert.Equal("/v1/privacyPolicy", descriptor.StandardEndpoints.PrivacyPolicy);
-            Assert.Equal("/v1/termsAndConditions", descriptor.StandardEndpoints.TermsAndConditions);
-            Assert.Single(descriptor.Configurations);
+            Assert.Equal(_configuration["baseUrl"], descriptor["baseUrl"].ToString());
+            Assert.Equal("1.0.0", descriptor["version"].ToString());
+            Assert.Equal("1.3", descriptor["descriptorVersion"].ToString());
+            Assert.Equal(2, descriptor["extensions"].AsArray().Count);
+            Assert.Equal("/v1/health", descriptor["standardEndpoints"]["health"].ToString());
+            Assert.Equal("/v1/documentation", descriptor["standardEndpoints"]["documentation"].ToString());
+            Assert.Equal("/v1/addon-lifecycle", descriptor["standardEndpoints"]["addonLifecycle"].ToString());
+            Assert.Equal("/v1/configuration", descriptor["standardEndpoints"]["configuration"].ToString());
+            Assert.Equal("/v1/configuration/validation", descriptor["standardEndpoints"]["configurationValidation"].ToString());
+            Assert.Equal("/v1/privacyPolicy", descriptor["standardEndpoints"]["privacyPolicy"].ToString());
+            Assert.Equal("/v1/termsAndConditions", descriptor["standardEndpoints"]["termsAndConditions"].ToString());
+            Assert.Single(descriptor["configurations"].AsArray());
         }
 
         [Fact]
