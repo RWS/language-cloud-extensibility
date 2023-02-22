@@ -1,8 +1,8 @@
 package com.rws.lt.lc.blueprint.web;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.rws.lt.lc.blueprint.security.GenericAuthorization;
 import com.rws.lt.lc.blueprint.service.AddonMetadataService;
-import com.rws.lt.lc.blueprint.transfer.Descriptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +20,7 @@ public class MetadataController {
 
     @RequestMapping(value = "/descriptor", method = RequestMethod.GET)
     @GenericAuthorization
-    public Descriptor getDescriptor() {
+    public ObjectNode getDescriptor() {
         LOGGER.info("getDescriptor >>");
         return metadataService.getDescriptor();
     }
