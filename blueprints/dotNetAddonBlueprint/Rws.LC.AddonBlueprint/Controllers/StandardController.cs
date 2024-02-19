@@ -25,27 +25,27 @@ namespace Rws.LC.AddonBlueprint.Controllers
         /// <summary>
         /// The configuration
         /// </summary>
-        private IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
 
         /// <summary>
         /// The logger.
         /// </summary>
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// The descriptor service.
         /// </summary>
-        private IDescriptorService _descriptorService;
+        private readonly IDescriptorService _descriptorService;
 
         /// <summary>
         /// The account service.
         /// </summary>
-        private IAccountService _accountService;
+        private readonly IAccountService _accountService;
 
         /// <summary>
         /// The health reporter.
         /// </summary>
-        private IHealthReporter _healthReporter;
+        private readonly IHealthReporter _healthReporter;
 
 
         /// <summary>

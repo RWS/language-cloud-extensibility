@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Rws.LC.AddonBlueprint.Helpers;
 using Rws.LC.AddonBlueprint.Models;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Rws.LC.AddonBlueprint.Controllers
@@ -27,7 +30,7 @@ namespace Rws.LC.AddonBlueprint.Controllers
         }
 
         /// <summary>
-        /// Receive content to be tranlated.
+        /// Receive content to be translated.
         /// </summary>
         /// <returns></returns>
         [Authorize]
@@ -44,7 +47,7 @@ namespace Rws.LC.AddonBlueprint.Controllers
         }
 
         /// <summary>
-        /// Returns the available transation engines
+        /// Returns the available translation engines
         /// </summary>
         /// <returns></returns>
         [Authorize]
@@ -53,6 +56,11 @@ namespace Rws.LC.AddonBlueprint.Controllers
         {
             // Endpoint used to retrieve the available translation engines(language pairs)
             _logger.LogInformation("Getting translation engines");
+
+            // Example how to retrieve headers information
+            string extensionPointVersion = Request.HttpContext.Request.Headers.SingleOrDefault(h => h.Key.Equals(Constants.ExtensionPointVersion, StringComparison.OrdinalIgnoreCase)).Value;
+            string extensionId = Request.HttpContext.Request.Headers.SingleOrDefault(h => h.Key.Equals(Constants.ExtensionId, StringComparison.OrdinalIgnoreCase)).Value;
+            string addonVersion = Request.HttpContext.Request.Headers.SingleOrDefault(h => h.Key.Equals(Constants.AddonVersion, StringComparison.OrdinalIgnoreCase)).Value;
 
             // TODO: Replace the following line with your actual "GetEngines" task(implementation needed)
             var result = new TranslationEnginesResult(new List<TranslationEngineModel>() { new TranslationEngineModel() });

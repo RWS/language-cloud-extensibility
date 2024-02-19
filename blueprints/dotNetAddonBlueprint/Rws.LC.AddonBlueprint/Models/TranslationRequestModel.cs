@@ -13,5 +13,20 @@ namespace Rws.LC.AddonBlueprint.Models
         /// The input text to translate as html.
         /// </summary>
         public List<string> Contents { get; set; }
+
+        /// <summary>
+        /// The project identifier.
+        /// </summary>
+        public string ProjectId { get; set; }
+
+        /// <summary>
+        /// The source file identifier.
+        /// </summary>
+        public string SourceFileId { get; set; }
+
+        /// <summary>
+        /// The target file identifier.
+        /// </summary>
+        public string TargetFileId { get; set; }
     }
 }

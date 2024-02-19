@@ -16,7 +16,7 @@ namespace Rws.LC.AddonBlueprint.Controllers
         /// <summary>
         /// The logger.
         /// </summary>
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutomaticTaskController"/> class.
