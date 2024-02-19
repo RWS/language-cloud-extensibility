@@ -17,4 +17,10 @@ public class TranslateRequest {
     @Valid
     @NotNull
     private String engineId;
+
+    private String projectId;
+
+    private String sourceFileId;
+
+    private String targetFileId;
 }
