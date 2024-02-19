@@ -1,0 +1,78 @@
+﻿{
+	"name": "Blueprint App",
+	"version": "1.0.0",
+	"description": "Blueprint App",
+	"extensions": [
+		{
+			"id": "SAMPLE_MT_EXTENSION_ID",
+			"name": "SAMPLE_MT_EXTENSION_NAME",
+			"extensionPointVersion": "1",
+			"extensionPointId": "lc.mtprovider",
+			"description": "SAMPLE_MT_EXTENSION_DESCRIPTION",
+			"configuration": {
+				"endpoints": {
+					"lc.mtprovider.translate": "/v1/translate",
+					"lc.mtprovider.engines": "/v1/translation-engines"
+				},
+				"format": "html"
+			}
+		},
+		{
+			"extensionPointId": "lc.automatictask",
+			"id": "SAMPLE_AUTOMATICTASK_EXTENSION_ID",
+			"name": "SAMPLE_AUTOMATICTASK_EXTENSION_NAME",
+			"description": "SAMPLE_AUTOMATICTASK_EXTENSION_DESCRIPTION",
+			"extensionPointVersion": "1",
+			"configuration": {
+				"endpoints": {
+					"lc.automatictask.submit": "/v1/submit"
+				},
+				"supportedInputFileType": "nativeSource",
+				"outputFileType": "nativeSource",
+				"scope": "file",
+				"outcomes": [
+					{
+						"default": true,
+						"description": "Done.",
+						"outcome": "done"
+					}
+				],
+				"workflowTemplateConfigurations": [
+					{
+						"name": "SAMPLE_AUTOMATICTASK_EXTENSION_CONFIG_NAME",
+						"id": "SAMPLE_AUTOMATICTASK_EXTENSION_CONFIG_ID",
+						"description": "SAMPLE_AUTOMATICTASK_EXTENSION_CONFIG_DESCRIPTION",
+						"optional": false,
+						"dataType": "string"
+					}
+				]
+			}
+		}
+	],
+	"standardEndpoints": {
+		"health": "/v1/health",
+		"documentation": "/v1/documentation",
+		"appLifecycle": "/v1/app-lifecycle",
+		"configuration": "/v1/configuration",
+		"configurationValidation": "/v1/configuration/validation",
+		"privacyPolicy": "/v1/privacyPolicy",
+		"termsAndConditions": "/v1/termsAndConditions"
+	},
+	"configurations": [
+		{
+			"name": "SAMPLE_CONFIG_NAME",
+			"id": "SAMPLE_CONFIG_ID",
+			"description": "SAMPLE_CONFIG_DESCRIPTION",
+			"optional": false,
+			"dataType": "string"
+		}
+	],
+	"releaseNotes": "Initial plugin",
+	"minimumVersion": "1.0.0",
+	"vendor": {
+		"name": "SAMPLE_VENDOR_NAME",
+		"url": "SAMPLE_VENDOR_URL",
+		"email": "sample_vendor@email.com"
+	},
+	"descriptorVersion": "1.4"
+}
