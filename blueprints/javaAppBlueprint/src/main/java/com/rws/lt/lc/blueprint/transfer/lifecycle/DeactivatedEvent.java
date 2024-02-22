@@ -1,0 +1,11 @@
+package com.rws.lt.lc.blueprint.transfer.lifecycle;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
+@JsonTypeName(AppLifecycleEvent.DEACTIVATED)
+public class DeactivatedEvent extends AppLifecycleEvent {
+
+    public DeactivatedEvent() {
+        super(DEACTIVATED);
+    }
+}
