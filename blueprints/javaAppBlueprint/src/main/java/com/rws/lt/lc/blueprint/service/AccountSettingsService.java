@@ -9,7 +9,7 @@ import com.rws.lt.lc.blueprint.persistence.AccountSettingsRepository;
 import com.rws.lt.lc.blueprint.transfer.ConfigurationValue;
 import com.rws.lt.lc.blueprint.transfer.ErrorDetail;
 import com.rws.lt.lc.blueprint.transfer.ErrorResponse;
-import com.rws.lt.lc.blueprint.transfer.lifecycle.ActivatedEvent;
+import com.rws.lt.lc.blueprint.transfer.lifecycle.InstalledEvent;
 import com.rws.lt.lc.blueprint.transfer.lifecycle.ActivatedEventDetails;
 import com.rws.lt.lc.blueprint.transfer.lifecycle.AppLifecycleEvent;
 import com.rws.lt.lc.blueprint.transfer.lifecycle.DeactivatedEvent;
@@ -37,14 +37,14 @@ public class AccountSettingsService {
 
     public void handleAppEvent(AppLifecycleEvent lifecycleEvent) {
         LOGGER.debug("appLifecycleEvent >> with type {} at {}", lifecycleEvent.getId(), lifecycleEvent.getTimestamp());
-        if (lifecycleEvent instanceof ActivatedEvent) {
-            handleAppEvent((ActivatedEvent) lifecycleEvent);
+        if (lifecycleEvent instanceof InstalledEvent) {
+            handleAppEvent((InstalledEvent) lifecycleEvent);
         } else if (lifecycleEvent instanceof DeactivatedEvent) {
             handleAppEvent((DeactivatedEvent) lifecycleEvent);
         }
     }
 
-    public void handleAppEvent(ActivatedEvent lifecycleEvent) {
+    public void handleAppEvent(InstalledEvent lifecycleEvent) {
         LOGGER.debug("handleAppEvent >> for tenantId {} ", RequestLocalContext.getActiveAccountId());
         ActivatedEventDetails details = lifecycleEvent.getData();
         String tenantId = RequestLocalContext.getActiveAccountId();

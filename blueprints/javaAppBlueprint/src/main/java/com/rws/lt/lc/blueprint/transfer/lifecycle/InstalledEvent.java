@@ -9,11 +9,11 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-@JsonTypeName(AppLifecycleEvent.ACTIVATED)
-public class ActivatedEvent extends AppLifecycleEvent {
+@JsonTypeName(AppLifecycleEvent.INSTALLED)
+public class InstalledEvent extends AppLifecycleEvent {
 
-    public ActivatedEvent() {
-        super(ACTIVATED);
+    public InstalledEvent() {
+        super(INSTALLED);
     }
 
     @Valid

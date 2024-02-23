@@ -162,7 +162,7 @@ public class AccountSettingsServiceTest {
 
     @Test
     public void testActivatedAppEvent() {
-        ActivatedEvent event = new ActivatedEvent();
+        InstalledEvent event = new InstalledEvent();
         event.setTimestamp(Long.toString(System.currentTimeMillis()));
         ActivatedEventDetails details = new ActivatedEventDetails();
 
@@ -185,7 +185,7 @@ public class AccountSettingsServiceTest {
 
     @Test
     public void testActivatedAppEventAlreadyActivated() {
-        ActivatedEvent event = new ActivatedEvent();
+        InstalledEvent event = new InstalledEvent();
         event.setTimestamp(Long.toString(System.currentTimeMillis()));
         ActivatedEventDetails details = new ActivatedEventDetails();
 

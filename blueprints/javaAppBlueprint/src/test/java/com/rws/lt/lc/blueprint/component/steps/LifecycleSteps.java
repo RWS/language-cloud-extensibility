@@ -20,7 +20,7 @@ public class LifecycleSteps extends TestStepsBase {
 
     @When("I activate the app")
     public void iActivateTheApp() {
-        ActivatedEvent event = new ActivatedEvent();
+        InstalledEvent event = new InstalledEvent();
         event.setTimestamp(String.valueOf(new Date()));
         ActivatedEventDetails details = new ActivatedEventDetails();
 
