@@ -15,12 +15,10 @@ import java.util.Map;
 public class AccountSettings extends PersistedDomain {
 
     @Indexed(background = true, unique = true)
-    @Field("aid")
+    @Field("accountId")
     private String accountId;
 
     @Field("configs")
     private Map<String, String> configurations = new HashMap<>();
 
-    @Field("ccreds")
-    private ClientCredentials clientCredentials;
 }

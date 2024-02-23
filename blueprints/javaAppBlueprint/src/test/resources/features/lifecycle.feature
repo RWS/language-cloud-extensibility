@@ -5,7 +5,7 @@ Feature:  lifecycle
     Then Last response status code is 200
 
   Scenario: I register the app
-    When I send an app lifecycle event with id "REGISTERED"
+    When I register the app
     Then Last response status code is 200
 
   Scenario: I send an illegal app lifecycle event type
@@ -13,21 +13,21 @@ Feature:  lifecycle
     Then Last response status code is 422
     And Last error code is "validationException"
 
-  Scenario: I activate the app
-    When I deactivate the app
-    When I activate the app
+  Scenario: I install the app
+    When I uninstall the app
+    When I install the app
     Then Last response status code is 200
-    When I deactivate the app
+    When I uninstall the app
     Then Last response status code is 200
 
-  Scenario: I can activate an account that has been activated before
-    When I deactivate the app
-    When I activate the app
+  Scenario: I can install an account that has been installed before
+    When I uninstall the app
+    When I install the app
     Then Last response status code is 200
-    When I activate the app
+    When I install the app
     Then Last response status code is 200
-#    After I deactivate the app I can reactivate it
-    When I deactivate the app
-    When I activate the app
+#    After I uninstall the app I can reinstall it
+    When I uninstall the app
+    When I install the app
     Then Last response status code is 200
-    When I deactivate the app
+    When I uninstall the app

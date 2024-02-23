@@ -18,8 +18,8 @@ import javax.validation.constraints.Pattern;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = InstalledEvent.class, name = AppLifecycleEvent.INSTALLED),
         @JsonSubTypes.Type(value = RegisteredEvent.class, name = AppLifecycleEvent.REGISTERED),
-        @JsonSubTypes.Type(value = UninstalledEvent.class, name = AppLifecycleEvent.UNREGISTERED),
-        @JsonSubTypes.Type(value = DeactivatedEvent.class, name = AppLifecycleEvent.UNINSTALLED)
+        @JsonSubTypes.Type(value = UnregisteredEvent.class, name = AppLifecycleEvent.UNREGISTERED),
+        @JsonSubTypes.Type(value = UninstalledEvent.class, name = AppLifecycleEvent.UNINSTALLED)
 })
 @Getter
 @Setter

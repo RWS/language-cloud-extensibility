@@ -7,7 +7,8 @@ import javax.validation.Valid;
 
 @Getter
 @Setter
-public class ActivatedEventDetails {
+public class RegisteredEventDetails {
+
     @Valid
     private ClientCredentialsTO clientCredentials;
 }

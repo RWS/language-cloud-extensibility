@@ -1,18 +1,17 @@
 package com.rws.lt.lc.blueprint.service;
 
 import com.rws.lt.lc.blueprint.domain.AccountSettings;
+import com.rws.lt.lc.blueprint.domain.AppRegistration;
 import com.rws.lt.lc.blueprint.domain.ClientCredentials;
 import com.rws.lt.lc.blueprint.exception.InvalidConfigurationException;
 import com.rws.lt.lc.blueprint.exception.NotAuthorizedException;
 import com.rws.lt.lc.blueprint.exception.ValidationException;
 import com.rws.lt.lc.blueprint.persistence.AccountSettingsRepository;
+import com.rws.lt.lc.blueprint.persistence.AppRegistrationRepository;
 import com.rws.lt.lc.blueprint.transfer.ConfigurationValue;
 import com.rws.lt.lc.blueprint.transfer.ErrorDetail;
 import com.rws.lt.lc.blueprint.transfer.ErrorResponse;
-import com.rws.lt.lc.blueprint.transfer.lifecycle.InstalledEvent;
-import com.rws.lt.lc.blueprint.transfer.lifecycle.ActivatedEventDetails;
-import com.rws.lt.lc.blueprint.transfer.lifecycle.AppLifecycleEvent;
-import com.rws.lt.lc.blueprint.transfer.lifecycle.DeactivatedEvent;
+import com.rws.lt.lc.blueprint.transfer.lifecycle.*;
 import com.rws.lt.lc.blueprint.util.RequestLocalContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +26,13 @@ public class AccountSettingsService {
     private static final String SECRET_VALUE = "***";
 
     private final AccountSettingsRepository accountSettingsRepository;
+    private final AppRegistrationRepository appRegistrationRepository;
     private final AppMetadataService metadataService;
 
     @Autowired
-    public AccountSettingsService(AccountSettingsRepository accountSettingsRepository, AppMetadataService metadataService) {
+    public AccountSettingsService(AccountSettingsRepository accountSettingsRepository, AppRegistrationRepository appRegistrationRepository, AppMetadataService metadataService) {
         this.accountSettingsRepository = accountSettingsRepository;
+        this.appRegistrationRepository = appRegistrationRepository;
         this.metadataService = metadataService;
     }
 
@@ -39,16 +40,20 @@ public class AccountSettingsService {
         LOGGER.debug("appLifecycleEvent >> with type {} at {}", lifecycleEvent.getId(), lifecycleEvent.getTimestamp());
         if (lifecycleEvent instanceof InstalledEvent) {
             handleAppEvent((InstalledEvent) lifecycleEvent);
-        } else if (lifecycleEvent instanceof DeactivatedEvent) {
-            handleAppEvent((DeactivatedEvent) lifecycleEvent);
+        } else if (lifecycleEvent instanceof RegisteredEvent) {
+            handleAppEvent((RegisteredEvent) lifecycleEvent);
+        } else if (lifecycleEvent instanceof UninstalledEvent) {
+            handleAppEvent((UninstalledEvent) lifecycleEvent);
+        } else if (lifecycleEvent instanceof UnregisteredEvent) {
+            handleAppEvent((UnregisteredEvent) lifecycleEvent);
         }
     }
 
     public void handleAppEvent(InstalledEvent lifecycleEvent) {
         LOGGER.debug("handleAppEvent >> for tenantId {} ", RequestLocalContext.getActiveAccountId());
-        ActivatedEventDetails details = lifecycleEvent.getData();
-        String tenantId = RequestLocalContext.getActiveAccountId();
+        var tenantId = RequestLocalContext.getActiveAccountId();
         AccountSettings entity = accountSettingsRepository.findAccountSettings(tenantId);
+
         if (entity != null) {
             LOGGER.debug("App already activated for tenantId {}", tenantId);
             return;
@@ -56,19 +61,40 @@ public class AccountSettingsService {
 
         entity = new AccountSettings();
         entity.setAccountId(tenantId);
-        if (details.getClientCredentials() != null) {
-            entity.setClientCredentials(new ClientCredentials(details.getClientCredentials()));
-        }
 
         accountSettingsRepository.save(entity);
     }
 
-    public void handleAppEvent(DeactivatedEvent lifecycleEvent) {
+    public void handleAppEvent(UninstalledEvent lifecycleEvent) {
         String accountId = RequestLocalContext.getActiveAccountId();
         AccountSettings entity = accountSettingsRepository.findAccountSettings(accountId);
         if (entity != null) {
             accountSettingsRepository.delete(entity);
         }
+    }
+
+    public void handleAppEvent(RegisteredEvent registeredEvent) {
+        var details = registeredEvent.getData();
+        var tenantId = RequestLocalContext.getActiveAccountId();
+        var entity = appRegistrationRepository.findByAccountId(tenantId);
+
+        if (entity != null) {
+            LOGGER.debug("App already registered for tenantId {}", tenantId);
+            return;
+        }
+
+        entity = new AppRegistration();
+        entity.setAccountId(tenantId);
+        if (details.getClientCredentials() != null) {
+            entity.setClientCredentials(new ClientCredentials(details.getClientCredentials()));
+        }
+
+        appRegistrationRepository.save(entity);
+    }
+
+    public void handleAppEvent(UnregisteredEvent lifecycleEvent) {
+        var tenantId = RequestLocalContext.getActiveAccountId();
+        appRegistrationRepository.deleteByAccountId(tenantId);
     }
 
 
