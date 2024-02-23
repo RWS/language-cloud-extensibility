@@ -15,15 +15,15 @@ public abstract class PersistedDomain {
     private String id;
 
     @Version
-    @Field("v")
+    @Field("version")
     private Long version;
 
     @CreatedDate
-    @Field("ca")
+    @Field("creationDate")
     private DateTime creationDate;
 
     @LastModifiedDate
-    @Field("lm")
+    @Field("lastModifiedDate")
     private DateTime lastModifiedDate;
 
     public String getId() {

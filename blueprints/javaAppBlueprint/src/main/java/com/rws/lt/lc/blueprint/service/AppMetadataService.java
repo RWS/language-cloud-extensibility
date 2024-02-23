@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class AddonMetadataService implements InitializingBean {
+public class AppMetadataService implements InitializingBean {
 
     @Value("${baseUrl}")
     private String baseUrl;
@@ -29,7 +29,7 @@ public class AddonMetadataService implements InitializingBean {
     }
 
     @Autowired
-    public AddonMetadataService() throws IOException {
+    public AppMetadataService() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         descriptor = objectMapper.readValue(getClass().getResourceAsStream("/descriptor.json"), ObjectNode.class);
     }

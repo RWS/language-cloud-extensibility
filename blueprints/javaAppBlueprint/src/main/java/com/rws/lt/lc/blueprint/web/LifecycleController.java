@@ -1,7 +1,7 @@
 package com.rws.lt.lc.blueprint.web;
 
 import com.rws.lt.lc.blueprint.service.AccountSettingsService;
-import com.rws.lt.lc.blueprint.transfer.lifecycle.AddonLifecycleEvent;
+import com.rws.lt.lc.blueprint.transfer.lifecycle.AppLifecycleEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,10 +19,10 @@ public class LifecycleController {
     @Autowired
     private AccountSettingsService accountSettingsService;
 
-    @PostMapping("/addon-lifecycle")
-    public void addonLifecycleEvent(@RequestBody @Valid AddonLifecycleEvent lifecycleEvent) {
-        LOGGER.info("addonLifecycleEvent >> with type {} at {}", lifecycleEvent.getId(), lifecycleEvent.getTimestamp());
-        accountSettingsService.handleAddonEvent(lifecycleEvent);
+    @PostMapping("/app-lifecycle")
+    public void appLifecycleEvent(@RequestBody @Valid AppLifecycleEvent lifecycleEvent) {
+        LOGGER.info("appLifecycleEvent >> with type {} at {}", lifecycleEvent.getId(), lifecycleEvent.getTimestamp());
+        accountSettingsService.handleAppEvent(lifecycleEvent);
     }
 
 }

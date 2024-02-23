@@ -1,6 +1,6 @@
 package com.rws.lt.lc.blueprint.web;
 
-import com.rws.lt.lc.blueprint.metadata.AddonMetadataExtractionInterceptor;
+import com.rws.lt.lc.blueprint.metadata.AppMetadataExtractionInterceptor;
 import com.rws.lt.lc.blueprint.security.AuthorizationRequestInterceptor;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.ComponentScan;
@@ -14,14 +14,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebControllerConfiguration implements WebMvcConfigurer {
 
     private final AuthorizationRequestInterceptor authorizationRequestInterceptor;
-    private final AddonMetadataExtractionInterceptor addonMetadataExtractionInterceptor;
+    private final AppMetadataExtractionInterceptor appMetadataExtractionInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authorizationRequestInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/error");
-        registry.addInterceptor(addonMetadataExtractionInterceptor)
+        registry.addInterceptor(appMetadataExtractionInterceptor)
                 .addPathPatterns("/**");
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.repository.Query;
 
 public interface AccountSettingsRepository extends RetryableRepository<AccountSettings, String> {
 
-    @Query("{ 'aid' : ?0}")
+    @Query("{ 'accountId' : ?0}")
     AccountSettings findAccountSettings(String accountId);
 
 }

@@ -9,11 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
-import static com.rws.lt.lc.blueprint.metadata.AddonMetadataConstants.*;
+import static com.rws.lt.lc.blueprint.metadata.AppMetadataConstants.*;
 
 @Slf4j
 @Component
-public class AddonMetadataExtractionInterceptor extends HandlerInterceptorAdapter {
+public class AppMetadataExtractionInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object object) {
         addExtensionIdAndVersionToContext(request);
@@ -28,8 +28,8 @@ public class AddonMetadataExtractionInterceptor extends HandlerInterceptorAdapte
         Optional.ofNullable(request.getHeader(EXTENSION_POINT_VERSION_HEADER))
                 .ifPresent(extensionPointVersion -> RequestLocalContext.putInLocalContext(EXTENSION_POINT_VERSION_CONTEXT, extensionPointVersion));
         // access this property anywhere you need with RequestLocalContext.getFromLocalContext(ADDON_VERSION_CONTEXT)
-        Optional.ofNullable(request.getHeader(ADDON_VERSION_HEADER))
-                .ifPresent(addonVersion -> RequestLocalContext.putInLocalContext(ADDON_VERSION_CONTEXT, addonVersion));
+        Optional.ofNullable(request.getHeader(APP_VERSION_HEADER))
+                .ifPresent(addonVersion -> RequestLocalContext.putInLocalContext(APP_VERSION_CONTEXT, addonVersion));
     }
 
     @Override

@@ -10,7 +10,7 @@ spring:
   data:
     mongodb:
       authentication-database: admin
-      database: lc-mock-blueprint-addon
+      database: lc-mock-blueprint-app
       uri: mongodb://localhost:27017
       ssl-enabled: false
   main:

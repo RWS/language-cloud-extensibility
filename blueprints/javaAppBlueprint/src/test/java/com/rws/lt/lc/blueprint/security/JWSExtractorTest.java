@@ -57,7 +57,7 @@ public class JWSExtractorTest {
     private static final Integer JWS_VERIFY_LEEWAY_SECONDS = 30;
     public static final String TEST_ACCOUNT_ID = "accountId";
 
-    private static final String MOCK_BASE_URL = "https://www.blueprint-addon.rws.com/";
+    private static final String MOCK_BASE_URL = "https://www.blueprint-app.rws.com/";
     private static final String JWS_ISSUER_LC = "https://test-lc-issuer.rws.com/";
 
     private static Algorithm algorithm = null;

@@ -6,8 +6,8 @@ ENV LANG=C.UTF-8
 RUN apk -v --update add ca-certificates && \
     rm -rf /tmp/*.apk
 
-ADD lc-blueprint-addon-*.jar /local/lc-blueprint-addon/bin/lc-blueprint-addon.jar
+ADD lc-blueprint-app-*.jar /local/lc-blueprint-app/bin/lc-blueprint-app.jar
 
-ENTRYPOINT ["java", "-jar", "/local/lc-blueprint-addon/bin/lc-blueprint-addon.jar"]
+ENTRYPOINT ["java", "-jar", "/local/lc-blueprint-app/bin/lc-blueprint-app.jar"]
 
 EXPOSE 5000 25000

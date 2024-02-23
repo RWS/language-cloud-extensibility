@@ -16,7 +16,7 @@ import static org.junit.Assert.assertThat;
 public class MedatadaTestSteps extends TestStepsBase {
 
 
-    @When("^I get the add-on descriptor")
+    @When("^I get the app descriptor")
     public void getDescriptor() {
         ResponseEntity<ObjectNode> response = getRestTemplate().exchange(getBaseUrl() + "/v1/descriptor", HttpMethod.GET, null, ObjectNode.class);
         ScenarioStorage.setLastResponse(response);
@@ -40,20 +40,20 @@ public class MedatadaTestSteps extends TestStepsBase {
         assertThat(descriptor.get("extensions").size(), Is.is(endpointCount));
     }
 
-    @When("I get the add-on health")
+    @When("I get the app health")
     public void getHealth() {
         ResponseEntity<HealthStatus> response = getRestTemplate().exchange(getBaseUrl() + "/v1/health", HttpMethod.GET, null, HealthStatus.class);
         ScenarioStorage.setLastResponse(response);
     }
 
 
-    @When("I get the add-on documentation")
+    @When("I get the app documentation")
     public void getDocumentation() {
         ResponseEntity<HealthStatus> response = getRestTemplate().exchange(getBaseUrl() + "/v1/documentation", HttpMethod.GET, null, HealthStatus.class);
         ScenarioStorage.setLastResponse(response);
     }
 
-    @When("The add-on health response is true")
+    @When("The app health response is true")
     public void checkHealth() {
         HealthStatus lastResponse = ScenarioStorage.getLastResponse();
         assertThat(lastResponse.isOk(), Is.is(true));

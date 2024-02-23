@@ -9,15 +9,11 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-@JsonTypeName(AddonLifecycleEvent.ACTIVATED)
-public class ActivatedEvent extends AddonLifecycleEvent {
+@JsonTypeName(AppLifecycleEvent.INSTALLED)
+public class InstalledEvent extends AppLifecycleEvent {
 
-    public ActivatedEvent() {
-        super(ACTIVATED);
+    public InstalledEvent() {
+        super(INSTALLED);
     }
-
-    @Valid
-    @NotNull
-    private ActivatedEventDetails data;
 
 }

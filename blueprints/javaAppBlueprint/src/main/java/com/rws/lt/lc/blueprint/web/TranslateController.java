@@ -14,7 +14,7 @@ import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 
-import static com.rws.lt.lc.blueprint.metadata.AddonMetadataConstants.EXTENSION_POINT_VERSION_CONTEXT;
+import static com.rws.lt.lc.blueprint.metadata.AppMetadataConstants.EXTENSION_POINT_VERSION_CONTEXT;
 
 @RestController
 @RequestMapping("/v1/translate")

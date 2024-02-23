@@ -1,7 +1,7 @@
 {
-  "name": "Blueprint Addon",
+  "name": "Blueprint App",
   "version": "1.0.0",
-  "description": "Blueprint Addon",
+  "description": "Blueprint App",
   "extensions": [
     {
       "id": "SAMPLE_MT_EXTENSION_ID",
@@ -52,7 +52,7 @@
   "standardEndpoints": {
     "health": "/v1/health",
     "documentation": "/v1/documentation",
-    "addonLifecycle": "/v1/addon-lifecycle",
+    "appLifecycle": "/v1/app-lifecycle",
     "configuration": "/v1/configuration",
     "configurationValidation": "/v1/configuration/validation",
     "privacyPolicy": "/v1/privacyPolicy",
@@ -76,5 +76,5 @@
     "email": "sample_vendor@email.com"
   },
   "scopes": [],
-  "descriptorVersion": "1.3"
+  "descriptorVersion": "1.4"
 }

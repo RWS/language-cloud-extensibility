@@ -1,5 +1,5 @@
 application:
-  name: lc.addon.blueprint
+  name: lc.app.blueprint
 
 # TODO: replace with a real URL
 baseUrl: "replace-me"
@@ -26,11 +26,11 @@ management:
 # spring related settings
 spring:
   application:
-    name: lc-blueprint-addon
+    name: lc-blueprint-app
   data:
     mongodb:
       authentication-database: admin
-      database: lc-blueprint-addon
+      database: lc-blueprint-app
       uri: mongodb://localhost:27017
       ssl-enabled: false
       auto-index-creation: false

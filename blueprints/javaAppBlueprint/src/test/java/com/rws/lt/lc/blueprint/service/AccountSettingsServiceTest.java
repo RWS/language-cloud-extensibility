@@ -1,10 +1,12 @@
 package com.rws.lt.lc.blueprint.service;
 
 import com.rws.lt.lc.blueprint.domain.AccountSettings;
+import com.rws.lt.lc.blueprint.domain.AppRegistration;
 import com.rws.lt.lc.blueprint.domain.ClientCredentials;
 import com.rws.lt.lc.blueprint.exception.NotAuthorizedException;
 import com.rws.lt.lc.blueprint.exception.ValidationException;
 import com.rws.lt.lc.blueprint.persistence.AccountSettingsRepository;
+import com.rws.lt.lc.blueprint.persistence.AppRegistrationRepository;
 import com.rws.lt.lc.blueprint.transfer.ConfigurationValue;
 import com.rws.lt.lc.blueprint.transfer.lifecycle.*;
 import com.rws.lt.lc.blueprint.util.LocalContextKeys;
@@ -47,10 +49,13 @@ public class AccountSettingsServiceTest {
     private AccountSettingsRepository settingsRepository;
 
     @Mock
-    private AddonMetadataService metadataService;
+    private AppRegistrationRepository appRegistrationRepository;
+
+    @Mock
+    private AppMetadataService metadataService;
 
     @Before
-    public void init(){
+    public void init() {
         RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
     }
 
@@ -161,52 +166,47 @@ public class AccountSettingsServiceTest {
     }
 
     @Test
-    public void testActivatedAddonEvent() {
-        ActivatedEvent event = new ActivatedEvent();
-        event.setTimestamp(Long.toString(System.currentTimeMillis()));
-        ActivatedEventDetails details = new ActivatedEventDetails();
+    public void testInstalledAppEvent() {
+        var installedEvent = new InstalledEvent();
+        installedEvent.setTimestamp(Long.toString(System.currentTimeMillis()));
 
-        details.setClientCredentials(new ClientCredentialsTO("clientId1", "clientSecret1"));
-        event.setData(details);
+        RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
 
         when(settingsRepository.findAccountSettings(eq(ACCOUNT_ID))).thenReturn(null);
-        accountSettingsService.handleAddonEvent((AddonLifecycleEvent) event);
+        accountSettingsService.handleAppEvent((AppLifecycleEvent) installedEvent);
 
         ArgumentCaptor<AccountSettings> settingsCaptor = ArgumentCaptor.forClass(AccountSettings.class);
         verify(settingsRepository, times(1)).save(settingsCaptor.capture());
         AccountSettings savedSettings = settingsCaptor.getValue();
 
         assertThat(savedSettings.getAccountId(), is(ACCOUNT_ID));
-
-        ClientCredentials clientCredentials = savedSettings.getClientCredentials();
-        assertThat(clientCredentials.getClientId(), is("clientId1"));
-        assertThat(clientCredentials.getClientSecret(), is("clientSecret1"));
     }
 
     @Test
-    public void testActivatedAddonEventAlreadyActivated() {
-        ActivatedEvent event = new ActivatedEvent();
-        event.setTimestamp(Long.toString(System.currentTimeMillis()));
-        ActivatedEventDetails details = new ActivatedEventDetails();
+    public void testActivatedAppEventAlreadyActivated() {
+        var installedEvent = new InstalledEvent();
+        installedEvent.setTimestamp(Long.toString(System.currentTimeMillis()));
 
-        event.setData(details);
+        when(settingsRepository.findAccountSettings(eq(ACCOUNT_ID))).thenReturn(null);
+        accountSettingsService.handleAppEvent((AppLifecycleEvent) installedEvent);
 
-        when(settingsRepository.findAccountSettings(eq(ACCOUNT_ID))).thenReturn(new AccountSettings());
-        accountSettingsService.handleAddonEvent((AddonLifecycleEvent) event);
+        ArgumentCaptor<AccountSettings> settingsCaptor = ArgumentCaptor.forClass(AccountSettings.class);
+        verify(settingsRepository, times(1)).save(settingsCaptor.capture());
+        AccountSettings savedSettings = settingsCaptor.getValue();
 
-        verify(settingsRepository, never()).save(any());
+        assertThat(savedSettings.getAccountId(), is(ACCOUNT_ID));
     }
 
     @Test
-    public void testDeactivatedAccountEvent() {
-        DeactivatedEvent event = new DeactivatedEvent();
-        event.setTimestamp(Long.toString(System.currentTimeMillis()));
+    public void testUninstalledAccountEvent() {
+        var uninstalledEvent = new UninstalledEvent();
+        uninstalledEvent.setTimestamp(Long.toString(System.currentTimeMillis()));
 
         AccountSettings settings = new AccountSettings();
         settings.setAccountId(ACCOUNT_ID);
 
         when(settingsRepository.findAccountSettings(eq(ACCOUNT_ID))).thenReturn(settings);
-        accountSettingsService.handleAddonEvent(event);
+        accountSettingsService.handleAppEvent(uninstalledEvent);
 
         ArgumentCaptor<AccountSettings> settingsCaptor = ArgumentCaptor.forClass(AccountSettings.class);
         verify(settingsRepository, times(1)).delete(settingsCaptor.capture());
@@ -216,15 +216,63 @@ public class AccountSettingsServiceTest {
     }
 
     @Test
-    public void testDeactivatedAccountEventAlreadyDeactivated() {
-        DeactivatedEvent event = new DeactivatedEvent();
+    public void testUninstalledAccountEventAlreadyUninstalled() {
+        RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
+
+        UninstalledEvent event = new UninstalledEvent();
         event.setTimestamp(Long.toString(System.currentTimeMillis()));
 
         when(settingsRepository.findAccountSettings(eq(ACCOUNT_ID))).thenReturn(null);
-        accountSettingsService.handleAddonEvent(event);
+        accountSettingsService.handleAppEvent(event);
 
         verify(settingsRepository).findAccountSettings(eq(ACCOUNT_ID));
         verifyNoMoreInteractions(settingsRepository);
     }
+
+    @Test
+    public void testRegisteredAppEvent() {
+        var registeredEvent = new RegisteredEvent();
+        registeredEvent.setTimestamp(Long.toString(System.currentTimeMillis()));
+        var details = new RegisteredEventDetails();
+        details.setClientCredentials(new ClientCredentialsTO("clientId1", "clientSecret1"));
+        registeredEvent.setData(details);
+
+        RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
+        when(appRegistrationRepository.findByAccountId(eq(ACCOUNT_ID))).thenReturn(null);
+        accountSettingsService.handleAppEvent(registeredEvent);
+
+        ArgumentCaptor<AppRegistration> appRegistrationArgumentCaptor = ArgumentCaptor.forClass(AppRegistration.class);
+        verify(appRegistrationRepository, times(1)).save(appRegistrationArgumentCaptor.capture());
+        AppRegistration savedAppRegistration = appRegistrationArgumentCaptor.getValue();
+
+        assertThat(savedAppRegistration.getAccountId(), is(ACCOUNT_ID));
+
+        ClientCredentials clientCredentials = savedAppRegistration.getClientCredentials();
+        assertThat(clientCredentials.getClientId(), is("clientId1"));
+        assertThat(clientCredentials.getClientSecret(), is("clientSecret1"));
+    }
+
+    @Test
+    public void testRegisteredAppEventAlreadyRegistered() {
+        var registeredEvent = new RegisteredEvent();
+        var registeredApp = new AppRegistration();
+        RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
+        when(appRegistrationRepository.findByAccountId(ACCOUNT_ID)).thenReturn(registeredApp);
+
+        accountSettingsService.handleAppEvent(registeredEvent);
+
+        verify(appRegistrationRepository, never()).save(any());
+    }
+
+    @Test
+    public void testUnregisteredAppEvent() {
+        var unregisteredEvent = new UnregisteredEvent();
+        RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
+
+        accountSettingsService.handleAppEvent(unregisteredEvent);
+
+        verify(appRegistrationRepository).deleteByAccountId(eq(ACCOUNT_ID));
+    }
+
 
 }
