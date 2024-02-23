@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.rws.lt.lc.app.mtsample</groupId>
-    <artifactId>lc-mt-sample-app</artifactId>
+    <artifactId>lc-mt-sample-addon</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>LC MT Sample App Service</name>
