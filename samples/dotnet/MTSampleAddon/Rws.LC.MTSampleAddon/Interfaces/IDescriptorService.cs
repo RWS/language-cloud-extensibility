@@ -1,5 +1,5 @@
-﻿using Rws.LC.MTSampleAddon.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace Rws.LC.MTSampleAddon.Interfaces
 {
@@ -12,7 +12,7 @@ namespace Rws.LC.MTSampleAddon.Interfaces
         /// Gets the descriptor.
         /// </summary>
         /// <returns></returns>
-        AddonDescriptorModel GetDescriptor();
+        JsonNode GetDescriptor();
 
         /// <summary>
         /// Gets the secret configurations ids.

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MongoDB.Bson.Serialization;
 using Rws.LanguageCloud.Authentication.Jws;
 using Rws.LC.MTSampleAddon.DAL;
 using Rws.LC.MTSampleAddon.Exceptions;
@@ -41,8 +42,16 @@ namespace Rws.LC.MTSampleAddon
             services.AddSingleton<IDatabaseContext, DatabaseContext>();
             services.AddSingleton<IHealthReporter, HealthReporter>();
             services.AddSingleton<IRepository, Repository>();
+            services.AddSingleton<IAppRegistrationRepository, AppRegistrationRepository>();
             services.AddSingleton<IDescriptorService, DescriptorService>();
             services.AddSingleton<IAccountService, AccountService>();
+
+            // this ensures that the services are started and stopped concurrently
+            //services.Configure<HostOptions>(options =>
+            //{
+            //    options.ServicesStartConcurrently = true;
+            //    options.ServicesStopConcurrently = true;
+            //});
 
             // the parameter can be changed in appsettings.json to enable the mock functionality
             if (Configuration.GetValue("mockExtension:enabled", false))
@@ -63,6 +72,8 @@ namespace Rws.LC.MTSampleAddon
                     options.TokenValidationParameters.ValidIssuer = Configuration["Authorization:Issuer"];
                     options.TokenValidationParameters.ValidAudience = Configuration["baseUrl"];
                 });
+
+            BsonSerializer.RegisterSerializationProvider(new JsonNodeSerializerProvider());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -94,9 +105,9 @@ namespace Rws.LC.MTSampleAddon
                     {
                         string message;
 
-                        if (contextFeature.Error is AddonException)
+                        if (contextFeature.Error is AppException)
                         {
-                            var exception = (AddonException)contextFeature.Error;
+                            var exception = (AppException)contextFeature.Error;
 
                             context.Response.StatusCode = (int)exception.StatusCode;
                             message = JsonSerializer.Serialize(new

@@ -7,11 +7,10 @@ using Rws.LC.MTSampleAddon.Helpers;
 using Rws.LC.MTSampleAddon.Infrastructure;
 using Rws.LC.MTSampleAddon.Interfaces;
 using Rws.LC.MTSampleAddon.Models;
-using Rws.LC.MTSampleAddon.Services;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -55,8 +54,8 @@ namespace Rws.LC.MTSampleAddon.Controllers
         /// <param name="descriptorService">The descriptor service.</param>
         /// <param name="accountService">The account service.</param>
         /// <param name="healthReporter">The health reporter.</param>
-        public StandardController(IConfiguration configuration, 
-            ILogger<StandardController> logger, 
+        public StandardController(IConfiguration configuration,
+            ILogger<StandardController> logger,
             IDescriptorService descriptorService,
             IAccountService accountService,
             IHealthReporter healthReporter)
@@ -69,7 +68,7 @@ namespace Rws.LC.MTSampleAddon.Controllers
         }
 
         /// <summary>
-        /// Gets the add-on descriptor.
+        /// Gets the app descriptor.
         /// </summary>
         /// <returns>The descriptor</returns>
         [HttpGet("descriptor")]
@@ -77,35 +76,27 @@ namespace Rws.LC.MTSampleAddon.Controllers
         {
             // This endpoint provides the descriptor for the Language Cloud to inspect and register correctly.
             // It can be implemented in any number of ways. The example implementation is to load the descriptor.json file
-            // into the AddonDescriptorModel object and then serialize it as a result.
             // Alternative implementation can be generating the descriptor based on config settings, environment variables,
             // etc.
             _logger.LogInformation("Entered Descriptor endpoint.");
 
             // Descriptor service will provide an object describing the descriptor.
-            AddonDescriptorModel descriptor = _descriptorService.GetDescriptor();
+            JsonNode descriptor = _descriptorService.GetDescriptor();
 
             // TODO: You might need to change the baseUrl in appsettings.json
-            descriptor.BaseUrl = _configuration["baseUrl"];
+            descriptor["baseUrl"] = _configuration["baseUrl"];
 
-            // newtonsoft used to serialize entity with object type
-            var jsonSettings = new Newtonsoft.Json.JsonSerializerSettings
-            {
-                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
-                ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
-            };
-
-            return Content(Newtonsoft.Json.JsonConvert.SerializeObject(descriptor, jsonSettings), "application/json", Encoding.UTF8);
+            return Ok(descriptor);
         }
 
         /// <summary>
-        /// Gets the add-on health.
+        /// Gets the app health.
         /// </summary>
         /// <returns>200 status code if it's healthy.</returns>
         [HttpGet("health")]
         public IActionResult Health()
         {
-            // This is a health check endpoint. In most cases returnin Ok is enough, but you might want to make checks
+            // This is a health check endpoint. In most cases returning Ok is enough, but you might want to make checks
             // to resources this service uses, like: DB, message queues, storage etc.
             // Any response besides 200 Ok, will be considered as failure. As a suggestion use "return StatusCode(500);"
             // when you need to signal that the service is having health issues.
@@ -115,12 +106,12 @@ namespace Rws.LC.MTSampleAddon.Controllers
             {
                 return Ok();
             }
-            
+
             return StatusCode(500);
         }
 
         /// <summary>
-        /// This endpoint provides the documentation for the Add-On. It can return the HTML page with the documentation
+        /// This endpoint provides the documentation for the app. It can return the HTML page with the documentation
         /// or redirect to a page. In this sample redirect is used with URL configured in appsettings.json
         /// </summary>
         [HttpGet("documentation")]
@@ -134,8 +125,8 @@ namespace Rws.LC.MTSampleAddon.Controllers
         /// </summary>
         /// <returns></returns>
         [Authorize]
-        [HttpPost("addon-lifecycle")]
-        public async Task<IActionResult> AddonLifecycle()
+        [HttpPost("app-lifecycle")]
+        public async Task<IActionResult> AppLifecycle()
         {
             string payload;
             using (StreamReader sr = new StreamReader(Request.Body))
@@ -145,34 +136,35 @@ namespace Rws.LC.MTSampleAddon.Controllers
 
             var tenantId = HttpContext.User?.GetTenantId();
 
-            var lifecycle = JsonSerializer.Deserialize<AddOnLifecycleEvent>(payload, JsonSettings.Default());
+            var lifecycle = JsonSerializer.Deserialize<AppLifecycleEvent>(payload, JsonSettings.Default());
             switch (lifecycle.Id)
             {
-                case AddOnLifecycleEventEnum.REGISTERED:
-                    _logger.LogInformation($"Addon Registered in Language Cloud.");
-                    // This is the event notifying that the Add-On has been registered in Language Cloud
+                case AppLifecycleEventEnum.REGISTERED:
+                    _logger.LogInformation($"App Registered in Language Cloud.");
+                    // This is the event notifying that the App has been registered in Language Cloud
                     // no further details are available for that event
+                    AppLifecycleEvent<RegisteredEvent> registeredEvent = JsonSerializer.Deserialize<AppLifecycleEvent<RegisteredEvent>>(payload, JsonSettings.Default());
+                    await _accountService.SaveRegistrationInfo(registeredEvent.Data, CancellationToken.None).ConfigureAwait(true);
                     break;
-                case AddOnLifecycleEventEnum.ACTIVATED:
-                    // This is an Activation event, tenant id and the client credentials must be saved to db.
-                    AddOnLifecycleEvent<ActivatedEvent> activatedEvent = JsonSerializer.Deserialize<AddOnLifecycleEvent<ActivatedEvent>>(payload, JsonSettings.Default());
+                case AppLifecycleEventEnum.INSTALLED:
+                    _logger.LogInformation("App Installed Event Received for tenant id {TenantId}.", tenantId);
 
-                    _logger.LogInformation($"Addon Activated Event Received for tenant id {tenantId}.");
-
-                    await _accountService.SaveAccountInfo(activatedEvent.Data, tenantId, CancellationToken.None).ConfigureAwait(true);
+                    await _accountService.SaveAccountInfo(tenantId, CancellationToken.None).ConfigureAwait(true);
                     break;
-                case AddOnLifecycleEventEnum.UNREGISTERED:
-                    // This is the event notifying that the Add-On has been unregistered/deleted from Language Cloud.
+                case AppLifecycleEventEnum.UNREGISTERED:
+                    // This is the event notifying that the App has been unregistered/deleted from Language Cloud.
                     // No further details are available for that event.
-                    _logger.LogInformation("Addon Unregistered Event Received.");
+                    _logger.LogInformation("App Unregistered Event Received.");
                     // All the tenant information should be removed.
                     await _accountService.RemoveAccounts(CancellationToken.None).ConfigureAwait(true);
+                    // Remove the registration information
+                    await _accountService.RemoveRegistrationInfo(CancellationToken.None).ConfigureAwait(true);
                     break;
 
-                case AddOnLifecycleEventEnum.DEACTIVATED:
-                    // This is the event notifying that the Add-On has been uninstalled from a tenant account.
+                case AppLifecycleEventEnum.UNINSTALLED:
+                    // This is the event notifying that the App has been uninstalled from a tenant account.
                     // No further details are available for that event.
-                    _logger.LogInformation("Addon Deactivated Event Received.");
+                    _logger.LogInformation("App Uninstalled Event Received.");
                     await _accountService.RemoveAccountInfo(tenantId, CancellationToken.None).ConfigureAwait(true);
                     break;
             }
@@ -195,11 +187,7 @@ namespace Rws.LC.MTSampleAddon.Controllers
             var tenantId = HttpContext.User?.GetTenantId();
             ConfigurationSettingsResult configurationSettingsResult = await _accountService.GetConfigurationSettings(tenantId, CancellationToken.None).ConfigureAwait(true);
 
-            // newtonsoft used to serialize entity with dynamic type
-            var resultValue = Content(JsonSerializer.Serialize(configurationSettingsResult, JsonSettings.Default()), "application/json", Encoding.UTF8);
-            resultValue.StatusCode = 200;
-
-            return resultValue;
+            return Ok(configurationSettingsResult);
         }
 
         /// <summary>
@@ -208,26 +196,15 @@ namespace Rws.LC.MTSampleAddon.Controllers
         /// <returns>The updated configuration settings.</returns>
         [Authorize]
         [HttpPost("configuration")]
-        public async Task<IActionResult> SetConfigurationSettings()
+        public async Task<IActionResult> SetConfigurationSettings(List<ConfigurationValueModel> configurationValues)
         {
             _logger.LogInformation("Setting the configuration settings.");
 
-            // we deserialize this way to get the dynamic value from ConfigurationValueModel
-            string payload;
-            using (StreamReader sr = new StreamReader(Request.Body))
-            {
-                payload = await sr.ReadToEndAsync();
-            }
-
             var tenantId = HttpContext.User?.GetTenantId();
-            var configurationValues = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ConfigurationValueModel>>(payload);
 
-            // newtonsoft used to serialize entity with dynamic type
             ConfigurationSettingsResult configurationSettingsResult = await _accountService.SaveOrUpdateConfigurationSettings(tenantId, configurationValues, CancellationToken.None).ConfigureAwait(true);
-            var resultValue = Content(JsonSerializer.Serialize(configurationSettingsResult, JsonSettings.Default()), "application/json", Encoding.UTF8);
-            resultValue.StatusCode = 200;
 
-            return resultValue;
+            return Ok(configurationSettingsResult);
         }
 
         /// <summary>
@@ -245,6 +222,28 @@ namespace Rws.LC.MTSampleAddon.Controllers
             await _accountService.ValidateConfigurationSettings(tenantId, CancellationToken.None).ConfigureAwait(true);
 
             return Ok();
+        }
+
+        /// <summary>
+        /// This endpoint provides the privacy policy for the app. It can return the HTML page with the privacy policy
+        /// or redirect to a page. In this sample redirect is used the static file privacyPolicy.html.
+        /// </summary>
+        [HttpGet("privacyPolicy")]
+        public IActionResult PrivacyPolicy()
+        {
+            var html = System.IO.File.ReadAllText(@"./resources/privacyPolicy.html");
+            return base.Content(html, "text/html");
+        }
+
+        /// <summary>
+        /// This endpoint provides the terms and conditions for the app. It can return the HTML page with the terms and conditions
+        /// or redirect to a page. In this sample redirect is used the static file termsAndCondition.html.
+        /// </summary>
+        [HttpGet("termsAndConditions")]
+        public IActionResult TermsANdConditions()
+        {
+            var html = System.IO.File.ReadAllText(@"./resources/termsAndConditions.html");
+            return base.Content(html, "text/html");
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Rws.LC.MTSampleAddon.DAL;
-using Rws.LC.MTSampleAddon.DAL.Entities;
+﻿using Rws.LC.MTSampleAddon.DAL.Entities;
 using Rws.LC.MTSampleAddon.DAL.Entities.Extensions;
 using Rws.LC.MTSampleAddon.Exceptions;
 using Rws.LC.MTSampleAddon.Interfaces;
@@ -17,14 +16,15 @@ namespace Rws.LC.MTSampleAddon.Services
     /// </summary>
     public class AccountService : IAccountService
     {
-        public AccountService(IRepository repository, IDescriptorService descriptorService)
+        public AccountService(IRepository repository, IAppRegistrationRepository appRegistrationRepository, IDescriptorService descriptorService)
         {
             _repository = repository;
+            _appRegistrationRepository = appRegistrationRepository;
             _descriptorService = descriptorService;
         }
 
         private IRepository _repository;
-
+        private readonly IAppRegistrationRepository _appRegistrationRepository;
         private IDescriptorService _descriptorService;
 
         /// <summary>
@@ -33,27 +33,49 @@ namespace Rws.LC.MTSampleAddon.Services
         private const string SecretMask = "*****";
 
         /// <inheritdoc/>
-        public async Task SaveAccountInfo(ActivatedEvent activatedEvent, string tenantId, CancellationToken cancellationToken)
+        public async Task SaveRegistrationInfo(RegisteredEvent registeredEvent, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(registeredEvent.ClientCredentials?.ClientId))
+            {
+                throw new AppValidationException($"Invalid {nameof(registeredEvent.ClientCredentials.ClientId)} provided.", new Details { Code = ErrorCodes.InvalidInput, Name = nameof(registeredEvent.ClientCredentials.ClientId), Value = null });
+            }
+
+            if (string.IsNullOrEmpty(registeredEvent.ClientCredentials?.ClientSecret))
+            {
+                throw new AppValidationException($"Invalid {nameof(registeredEvent.ClientCredentials.ClientSecret)} provided.", new Details { Code = ErrorCodes.InvalidInput, Name = nameof(registeredEvent.ClientCredentials.ClientSecret), Value = null });
+            }
+
+            AppRegistrationEntity appRegistrationEntity = new AppRegistrationEntity()
+            {
+                ClientCredentials = registeredEvent.ClientCredentials.ToEntity()
+            };
+
+            var appRegistration = await _appRegistrationRepository.GetRegistrationInfo().ConfigureAwait(false);
+            if (appRegistration != null)
+            {
+                throw new DoubleRegistrationException();
+            }
+
+            await _appRegistrationRepository.SaveRegistrationInfo(appRegistrationEntity).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        public async Task RemoveRegistrationInfo(CancellationToken cancellationToken)
+        {
+            await _appRegistrationRepository.RemoveRegistrationInfo().ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        public async Task SaveAccountInfo(string tenantId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(tenantId))
             {
-                throw new AddonValidationException($"Invalid {nameof(tenantId)} provided.", new Details { Code = ErrorCodes.InvalidInput, Name = nameof(tenantId), Value = null });
-            }
-
-            if (string.IsNullOrEmpty(activatedEvent.ClientCredentials?.ClientId))
-            {
-                throw new AddonValidationException($"Invalid {nameof(activatedEvent.ClientCredentials.ClientId)} provided.", new Details { Code = ErrorCodes.InvalidInput, Name = nameof(activatedEvent.ClientCredentials.ClientId), Value = null });
-            }
-
-            if (string.IsNullOrEmpty(activatedEvent.ClientCredentials?.ClientSecret))
-            {
-                throw new AddonValidationException($"Invalid {nameof(activatedEvent.ClientCredentials.ClientSecret)} provided.", new Details { Code = ErrorCodes.InvalidInput, Name = nameof(activatedEvent.ClientCredentials.ClientSecret), Value = null });
+                throw new AppValidationException($"Invalid {nameof(tenantId)} provided.", new Details { Code = ErrorCodes.InvalidInput, Name = nameof(tenantId), Value = null });
             }
 
             AccountInfoEntity accountInfoEntity = new AccountInfoEntity()
             {
-                TenantId = tenantId,
-                ClientCredentials = activatedEvent.ClientCredentials.ToEntity()
+                TenantId = tenantId
             };
 
             var accountInfo = await _repository.GetAccountInfoByTenantId(tenantId).ConfigureAwait(false);
@@ -85,7 +107,7 @@ namespace Rws.LC.MTSampleAddon.Services
             var accountInfo = await _repository.GetAccountInfoByTenantId(tenantId).ConfigureAwait(false);
             if (accountInfo == null)
             {
-                throw new AccountValidationException($"Account {tenantId} is not activated!", new Details { Code = ErrorCodes.AccountNotActivated, Name = nameof(tenantId), Value = tenantId });
+                throw new AccountValidationException($"Account {tenantId} is not installed!", new Details { Code = ErrorCodes.AccountNotInstalled, Name = nameof(tenantId), Value = tenantId });
             }
 
             if (accountInfo.ConfigurationValues == null)
@@ -102,7 +124,7 @@ namespace Rws.LC.MTSampleAddon.Services
             AccountInfoEntity accountInfo = await _repository.GetAccountInfoByTenantId(tenantId).ConfigureAwait(false);
             if (accountInfo == null)
             {
-                throw new AccountValidationException($"Account {tenantId} is not activated!", new Details { Code = ErrorCodes.AccountNotActivated, Name = nameof(tenantId), Value = tenantId });
+                throw new AccountValidationException($"Account {tenantId} is not installed!", new Details { Code = ErrorCodes.AccountNotInstalled, Name = nameof(tenantId), Value = tenantId });
             }
 
             accountInfo = UpdateConfigurationsForAccount(accountInfo, configurationValues);
@@ -117,7 +139,7 @@ namespace Rws.LC.MTSampleAddon.Services
             var accountInfo = await _repository.GetAccountInfoByTenantId(tenantId).ConfigureAwait(false);
             if (accountInfo == null)
             {
-                throw new AccountValidationException($"Account {tenantId} is not activated!", new Details { Code = ErrorCodes.AccountNotActivated, Name = nameof(tenantId), Value = tenantId });
+                throw new AccountValidationException($"Account {tenantId} is not installed!", new Details { Code = ErrorCodes.AccountNotInstalled, Name = nameof(tenantId), Value = tenantId });
             }
 
             var configurations = accountInfo.ConfigurationValues;

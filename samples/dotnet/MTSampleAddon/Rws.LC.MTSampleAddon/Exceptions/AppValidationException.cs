@@ -3,16 +3,16 @@ using System.Net;
 
 namespace Rws.LC.MTSampleAddon.Exceptions
 {
-    public class AddonValidationException : AddonException
+    public class AppValidationException : AppException
     {
-        public AddonValidationException(string message, Exception inner, params Details[] details) : base(message, inner)
+        public AppValidationException(string message, Exception inner, params Details[] details) : base(message, inner)
         {
             ErrorCode = ErrorCodes.InvalidValues;
             StatusCode = HttpStatusCode.BadRequest;
             ExceptionDetails = details;
         }
 
-        public AddonValidationException(string message, params Details[] details) : base(message)
+        public AppValidationException(string message, params Details[] details) : base(message)
         {
             ErrorCode = ErrorCodes.InvalidValues;
             StatusCode = HttpStatusCode.BadRequest;

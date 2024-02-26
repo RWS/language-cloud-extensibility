@@ -96,7 +96,7 @@ namespace Rws.LC.AppBlueprint.Controllers
         [HttpGet("health")]
         public IActionResult Health()
         {
-            // This is a health check endpoint. In most cases returnin Ok is enough, but you might want to make checks
+            // This is a health check endpoint. In most cases returning Ok is enough, but you might want to make checks
             // to resources this service uses, like: DB, message queues, storage etc.
             // Any response besides 200 Ok, will be considered as failure. As a suggestion use "return StatusCode(500);"
             // when you need to signal that the service is having health issues.

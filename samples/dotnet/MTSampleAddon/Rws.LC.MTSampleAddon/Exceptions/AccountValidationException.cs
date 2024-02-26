@@ -3,7 +3,7 @@ using System.Net;
 
 namespace Rws.LC.MTSampleAddon.Exceptions
 {
-    public class AccountValidationException : AddonException
+    public class AccountValidationException : AppException
     {
         public AccountValidationException(string message, Exception inner, params Details[] details) : base(message, inner)
         {

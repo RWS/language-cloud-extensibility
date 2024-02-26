@@ -19,16 +19,11 @@ namespace Rws.LC.MTSampleAddon.DAL.Entities
         public string TenantId { get; set; }
 
         /// <summary>
-        /// The client credentials.
-        /// </summary>
-        public ClientCredentialsEntity ClientCredentials { get; set; }
-
-        /// <summary>
         /// The configuration values.
         /// </summary>
         public List<ConfigurationValueEntity> ConfigurationValues { get; set; }
 
-        public string GetServiceKey() 
+        public string GetServiceKey()
         {
             return Convert.ToString(ConfigurationValues.Where(c => c.Id.Equals(Constants.GoogleServiceKey)).First().Value);
         }

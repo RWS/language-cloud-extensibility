@@ -2,7 +2,7 @@
 
 namespace Rws.LC.MTSampleAddon.Exceptions
 {
-    public class SetupValidationException : AddonException
+    public class SetupValidationException : AppException
     {
         public SetupValidationException(string message, Details[] details) : base(message)
         {

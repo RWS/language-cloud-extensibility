@@ -3,40 +3,40 @@ using System.Net;
 
 namespace Rws.LC.MTSampleAddon.Exceptions
 {
-    public class AddonException : Exception
+    public class AppException : Exception
     {
         public string ErrorCode { get; set; }
         public HttpStatusCode StatusCode { get; set; }
         public Details[] ExceptionDetails { get; set; }
 
-        public AddonException()
+        public AppException()
         {
             ErrorCode = ErrorCodes.InternalServerError;
             StatusCode = HttpStatusCode.InternalServerError;
         }
 
-        public AddonException(string message)
+        public AppException(string message)
             : base(message)
         {
             ErrorCode = ErrorCodes.InternalServerError;
             StatusCode = HttpStatusCode.InternalServerError;
         }
 
-        public AddonException(string message, Exception inner)
+        public AppException(string message, Exception inner)
             : base(message, inner)
         {
             ErrorCode = ErrorCodes.InternalServerError;
             StatusCode = HttpStatusCode.InternalServerError;
         }
 
-        public AddonException(HttpStatusCode statusCode, string errorCode, string message)
+        public AppException(HttpStatusCode statusCode, string errorCode, string message)
             : base(message)
         {
             ErrorCode = errorCode;
             StatusCode = statusCode;
         }
 
-        public AddonException(HttpStatusCode statusCode, string errorCode, string message, Details[] details)
+        public AppException(HttpStatusCode statusCode, string errorCode, string message, Details[] details)
             : base(message)
         {
             ErrorCode = errorCode;
@@ -44,14 +44,14 @@ namespace Rws.LC.MTSampleAddon.Exceptions
             ExceptionDetails = details;
         }
 
-        public AddonException(HttpStatusCode statusCode, string errorCode, string message, Exception inner)
+        public AppException(HttpStatusCode statusCode, string errorCode, string message, Exception inner)
             : base(message, inner)
         {
             ErrorCode = errorCode;
             StatusCode = statusCode;
         }
 
-        public AddonException(HttpStatusCode statusCode, string errorCode, string message, Details[] details, Exception inner)
+        public AppException(HttpStatusCode statusCode, string errorCode, string message, Details[] details, Exception inner)
             : base(message, inner)
         {
             ErrorCode = errorCode;

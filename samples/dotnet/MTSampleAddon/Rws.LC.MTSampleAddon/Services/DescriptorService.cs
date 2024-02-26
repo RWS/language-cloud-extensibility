@@ -1,11 +1,9 @@
-﻿using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Rws.LC.MTSampleAddon.Enums;
+﻿using Rws.LC.MTSampleAddon.Enums;
 using Rws.LC.MTSampleAddon.Interfaces;
-using Rws.LC.MTSampleAddon.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace Rws.LC.MTSampleAddon.Services
 {
@@ -19,16 +17,16 @@ namespace Rws.LC.MTSampleAddon.Services
         /// </summary>
         public DescriptorService()
         {
-            // Reading from the descriptor.json file, the descriptor for this Add-On. 
-            // Customize it to represent your Add-On behavior.
+            // Reading from the descriptor.json file, the descriptor for this app. 
+            // Customize it to represent your app behavior.
             string descriptorText = File.ReadAllText("descriptor.json");
-            _addonDescriptor = JsonConvert.DeserializeObject<AddonDescriptorModel>(descriptorText);
+            _appDescriptor = JsonNode.Parse(descriptorText);
         }
 
         /// <summary>
         /// The addon descriptor.
         /// </summary>
-        private readonly AddonDescriptorModel _addonDescriptor;
+        private readonly JsonNode _appDescriptor;
 
         /// <summary>
         /// The secret data type.
@@ -44,14 +42,14 @@ namespace Rws.LC.MTSampleAddon.Services
         /// Gets the descriptor.
         /// </summary>
         /// <returns></returns>
-        public AddonDescriptorModel GetDescriptor()
+        public JsonNode GetDescriptor()
         {
-            foreach (var configuration in _addonDescriptor.Configurations.Where(c => c.DataType == SecretDataType))
+            foreach (var configuration in _appDescriptor["configurations"].AsArray().Where(c => c["dataType"].ToString() == SecretDataType.ToString()))
             {
-                configuration.DefaultValue = SecretMask;
+                configuration["defaultValue"] = SecretMask;
             }
 
-            return _addonDescriptor;
+            return _appDescriptor;
         }
 
         /// <summary>
@@ -60,7 +58,7 @@ namespace Rws.LC.MTSampleAddon.Services
         /// <returns></returns>
         public List<string> GetSecretConfigurations()
         {
-            return _addonDescriptor.Configurations.Where(c => c.DataType == SecretDataType).Select(s => s.Id).ToList();
+            return _appDescriptor["configurations"].AsArray().Where(c => c["dataType"].ToString() == SecretDataType.ToString()).Select(s => s["id"].ToString()).ToList();
         }
     }
 }

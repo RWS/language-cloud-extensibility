@@ -11,12 +11,26 @@ namespace Rws.LC.MTSampleAddon.Interfaces
     public interface IAccountService
     {
         /// <summary>
+        /// Saves the registration information.
+        /// </summary>
+        /// <param name="registeredEvent">The registered event information.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task SaveRegistrationInfo(RegisteredEvent registeredEvent, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Removes the registration information.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task RemoveRegistrationInfo(CancellationToken cancellationToken);
+
+        /// <summary>
         /// Saves the account information.
         /// </summary>
-        /// <param name="activatedEvent">The activated event.</param>
         /// <param name="tenantId">The tenant identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        Task SaveAccountInfo(ActivatedEvent activatedEvent, string tenantId, CancellationToken cancellationToken);
+        Task SaveAccountInfo(string tenantId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the account information.

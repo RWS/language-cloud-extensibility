@@ -7,13 +7,13 @@ using NSubstitute;
 using Rws.LC.MTSampleAddon.Helpers;
 using Rws.LC.MTSampleAddon.Interfaces;
 using Rws.LC.MTSampleAddon.Models;
-using Rws.LC.MTSampleAddon.Services;
 using Rws.LC.MTSampleAddon.Test.Helpers;
-using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -56,19 +56,22 @@ namespace Rws.LC.MTSampleAddon.Test.StandardController
         {
             var standardController = BuildStandardController(new DefaultHttpContext());
 
-            var response = standardController.Descriptor();
+            var result = standardController.Descriptor();
+            var descriptor = (result as OkObjectResult).Value as JsonNode;
 
-            var descriptor = JsonSerializer.Deserialize<AddonDescriptorModel>((response as ContentResult).Content, JsonSettings.Default());
-            Assert.Equal(_configuration["baseUrl"], descriptor.BaseUrl);
-            Assert.Equal("1.0.0", descriptor.Version);
-            Assert.Equal("1.2", descriptor.DescriptorVersion);
-            Assert.Equal(1, descriptor.Extensions.Count);
-            Assert.Equal("/v1/health", descriptor.StandardEndpoints.Health);
-            Assert.Equal("/v1/documentation", descriptor.StandardEndpoints.Documentation);
-            Assert.Equal("/v1/addon-lifecycle", descriptor.StandardEndpoints.AddonLifecycle);
-            Assert.Equal("/v1/configuration", descriptor.StandardEndpoints.Configuration);
-            Assert.Equal("/v1/configuration/validation", descriptor.StandardEndpoints.ConfigurationValidation);
-            Assert.Equal(3, descriptor.Configurations.Count);
+            Assert.Equal(_configuration["baseUrl"], descriptor["baseUrl"].ToString());
+            Assert.Equal("1.0.0", descriptor["version"].ToString());
+            Assert.Equal("1.4", descriptor["descriptorVersion"].ToString());
+            Assert.Single(descriptor["extensions"].AsArray());
+            Assert.Equal("/v1/health", descriptor["standardEndpoints"]["health"].ToString());
+            Assert.Equal("/v1/documentation", descriptor["standardEndpoints"]["documentation"].ToString());
+            Assert.Equal("/v1/app-lifecycle", descriptor["standardEndpoints"]["appLifecycle"].ToString());
+            Assert.Equal("/v1/configuration", descriptor["standardEndpoints"]["configuration"].ToString());
+            Assert.Equal("/v1/configuration/validation", descriptor["standardEndpoints"]["configurationValidation"].ToString());
+            Assert.Equal("/v1/privacyPolicy", descriptor["standardEndpoints"]["privacyPolicy"].ToString());
+            Assert.Equal("/v1/termsAndConditions", descriptor["standardEndpoints"]["termsAndConditions"].ToString());
+            Assert.Equal(3, descriptor["configurations"].AsArray().Count);
+
         }
 
         [Fact]
@@ -93,52 +96,52 @@ namespace Rws.LC.MTSampleAddon.Test.StandardController
         }
 
         [Fact]
-        public async Task AddonLifecycleRegister()
+        public async Task AppLifecycleRegister()
         {
             using (var stream = new MemoryStream())
             {
                 var standardController = BuildStandardController(BuildRequestContext("RegisteredEventRequest.json", stream));
 
-                var response = await standardController.AddonLifecycle().ConfigureAwait(false);
+                var response = await standardController.AppLifecycle().ConfigureAwait(false);
 
                 Assert.True(response is OkResult);
             }
         }
 
         [Fact]
-        public async Task AddonLifecycleUnregister()
+        public async Task AppLifecycleUnregister()
         {
             using (var stream = new MemoryStream())
             {
                 var standardController = BuildStandardController(BuildRequestContext("UnregisteredEventRequest.json", stream));
 
-                var response = await standardController.AddonLifecycle().ConfigureAwait(false);
+                var response = await standardController.AppLifecycle().ConfigureAwait(false);
 
                 Assert.True(response is OkResult);
             }
         }
 
         [Fact]
-        public async Task AddonLifecycleActivate()
+        public async Task AppLifecycleInstall()
         {
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("ActivatedEventRequest.json", stream));
+                var standardController = BuildStandardController(BuildRequestContext("InstalledEventRequest.json", stream));
 
-                var response = await standardController.AddonLifecycle().ConfigureAwait(false);
+                var response = await standardController.AppLifecycle().ConfigureAwait(false);
 
                 Assert.True(response is OkResult);
             }
         }
 
         [Fact]
-        public async Task AddonLifecycleDeactivate()
+        public async Task AppLifecycleUninstall()
         {
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("DeactivatedEventRequest.json", stream));
+                var standardController = BuildStandardController(BuildRequestContext("UninstalledEventRequest.json", stream));
 
-                var response = await standardController.AddonLifecycle().ConfigureAwait(false);
+                var response = await standardController.AppLifecycle().ConfigureAwait(false);
 
                 Assert.True(response is OkResult);
             }
@@ -147,75 +150,89 @@ namespace Rws.LC.MTSampleAddon.Test.StandardController
         [Fact]
         public async Task SetConfigurationSettings()
         {
-            // first activate the add-on
+            // first install the app
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("ActivatedEventRequest.json", stream));
-                await standardController.AddonLifecycle().ConfigureAwait(false);
+                var standardController = BuildStandardController(BuildRequestContext("InstalledEventRequest.json", stream));
+                await standardController.AppLifecycle().ConfigureAwait(false);
             }
-            // then set the configuration settings on the account activation entity
+            // then set the configuration settings on the account install entity
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("ConfigurationRequest.json", stream));
+                var httpContext = new DefaultHttpContext();
+                httpContext.User = _mockTenant.GetDefaultPrincipal();
+                var standardController = BuildStandardController(httpContext);
 
-                var response = await standardController.SetConfigurationSettings().ConfigureAwait(false);
+                var configSettingsRequest = JsonSerializer.Deserialize<List<ConfigurationValueModel>>(File.ReadAllText("TestFiles\\ConfigurationRequest.json"), JsonSettings.Default());
 
-                var configurationSettings = JsonSerializer.Deserialize<ConfigurationSettingsResult>((response as ContentResult).Content, JsonSettings.Default());
+                var response = await standardController.SetConfigurationSettings(configSettingsRequest).ConfigureAwait(false);
+
+                var configurationSettings = (response as OkObjectResult).Value as ConfigurationSettingsResult;
                 Assert.Equal(1, configurationSettings.ItemCount);
                 Assert.Single(configurationSettings.Items);
                 Assert.Equal("SAMPLE_CONFIG_ID", configurationSettings.Items.First().Id);
-                Assert.Equal("sampleConfigValue", Convert.ToString(configurationSettings.Items.First().Value));
+                Assert.Equal("sampleConfigValue", configurationSettings.Items.First().Value.ToString());
             }
         }
 
         [Fact]
         public async Task GetConfigurationSettings()
         {
-            // first activate the add-on
+            // first install the app
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("ActivatedEventRequest.json", stream));
-                await standardController.AddonLifecycle().ConfigureAwait(false);
+                var standardController = BuildStandardController(BuildRequestContext("InstalledEventRequest.json", stream));
+                await standardController.AppLifecycle().ConfigureAwait(false);
             }
-            // then set the configuration settings on the account activation entity
+            // then set the configuration settings on the account install entity
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("ConfigurationRequest.json", stream));
-                await standardController.SetConfigurationSettings().ConfigureAwait(false);
+                var httpContext = new DefaultHttpContext();
+                httpContext.User = _mockTenant.GetDefaultPrincipal();
+                var standardController = BuildStandardController(httpContext);
+
+                var configSettingsRequest = JsonSerializer.Deserialize<List<ConfigurationValueModel>>(File.ReadAllText("TestFiles\\ConfigurationRequest.json"), JsonSettings.Default());
+
+                await standardController.SetConfigurationSettings(configSettingsRequest).ConfigureAwait(false);
             }
             // prepare context user for the GET config settings request
-            var httpContext = new DefaultHttpContext();
-            httpContext.User = _mockTenant.GetDefaultPrincipal();
-            var testedStandardController = BuildStandardController(httpContext);
+            var httpContext2 = new DefaultHttpContext();
+            httpContext2.User = _mockTenant.GetDefaultPrincipal();
+            var testedStandardController = BuildStandardController(httpContext2);
 
             var response = await testedStandardController.GetConfigurationSettings().ConfigureAwait(false);
 
-            var configurationSettings = JsonSerializer.Deserialize<ConfigurationSettingsResult>((response as ContentResult).Content, JsonSettings.Default());
+            var configurationSettings = (response as OkObjectResult).Value as ConfigurationSettingsResult;
             Assert.Equal(1, configurationSettings.ItemCount);
             Assert.Single(configurationSettings.Items);
             Assert.Equal("SAMPLE_CONFIG_ID", configurationSettings.Items.First().Id);
-            Assert.Equal("sampleConfigValue", Convert.ToString(configurationSettings.Items.First().Value));
+            Assert.Equal("sampleConfigValue", configurationSettings.Items.First().Value.ToString());
         }
 
         [Fact]
         public async Task ValidateConfigurationSettings()
         {
-            // first activate the add-on
+            // first install the app
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("ActivatedEventRequest.json", stream));
-                await standardController.AddonLifecycle().ConfigureAwait(false);
+                var standardController = BuildStandardController(BuildRequestContext("InstalledEventRequest.json", stream));
+                await standardController.AppLifecycle().ConfigureAwait(false);
             }
-            // then set the configuration settings on the account activation entity
+            // then set the configuration settings on the account install entity
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("ConfigurationRequest.json", stream));
-                await standardController.SetConfigurationSettings().ConfigureAwait(false);
+                var httpContext = new DefaultHttpContext();
+                httpContext.User = _mockTenant.GetDefaultPrincipal();
+                var standardController = BuildStandardController(httpContext);
+
+                var configSettingsRequest = JsonSerializer.Deserialize<List<ConfigurationValueModel>>(File.ReadAllText("TestFiles\\ConfigurationRequest.json"), JsonSettings.Default());
+
+                await standardController.SetConfigurationSettings(configSettingsRequest).ConfigureAwait(false);
             }
             // prepare context user for the config validation request
-            var httpContext = new DefaultHttpContext();
-            httpContext.User = _mockTenant.GetDefaultPrincipal();
-            var testedStandardController = BuildStandardController(httpContext);
+            var httpContext2 = new DefaultHttpContext();
+            httpContext2.User = _mockTenant.GetDefaultPrincipal();
+            var testedStandardController = BuildStandardController(httpContext2);
 
             var response = await testedStandardController.ValidateConfiguration().ConfigureAwait(false);
 

@@ -1,4 +1,6 @@
-﻿namespace Rws.LC.MTSampleAddon.DAL.Entities
+﻿using System.Text.Json.Nodes;
+
+namespace Rws.LC.MTSampleAddon.DAL.Entities
 {
     public class ConfigurationValueEntity
     {
@@ -10,6 +12,6 @@
         /// <summary>
         /// The value object.
         /// </summary>
-        public dynamic Value { get; set; }
+        public JsonNode Value { get; set; }
     }
 }
