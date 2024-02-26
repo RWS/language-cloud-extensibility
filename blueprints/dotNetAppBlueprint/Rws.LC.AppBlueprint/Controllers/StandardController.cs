@@ -9,7 +9,6 @@ using Rws.LC.AppBlueprint.Interfaces;
 using Rws.LC.AppBlueprint.Models;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
@@ -188,11 +187,7 @@ namespace Rws.LC.AppBlueprint.Controllers
             var tenantId = HttpContext.User?.GetTenantId();
             ConfigurationSettingsResult configurationSettingsResult = await _accountService.GetConfigurationSettings(tenantId, CancellationToken.None).ConfigureAwait(true);
 
-            // newtonsoft used to serialize entity with dynamic type
-            var resultValue = Content(JsonSerializer.Serialize(configurationSettingsResult, JsonSettings.Default()), "application/json", Encoding.UTF8);
-            resultValue.StatusCode = 200;
-
-            return resultValue;
+            return Ok(configurationSettingsResult);
         }
 
         /// <summary>
@@ -201,26 +196,15 @@ namespace Rws.LC.AppBlueprint.Controllers
         /// <returns>The updated configuration settings.</returns>
         [Authorize]
         [HttpPost("configuration")]
-        public async Task<IActionResult> SetConfigurationSettings()
+        public async Task<IActionResult> SetConfigurationSettings(List<ConfigurationValueModel> configurationValues)
         {
             _logger.LogInformation("Setting the configuration settings.");
 
-            // we deserialize this way to get the dynamic value from ConfigurationValueModel
-            string payload;
-            using (StreamReader sr = new StreamReader(Request.Body))
-            {
-                payload = await sr.ReadToEndAsync();
-            }
-
             var tenantId = HttpContext.User?.GetTenantId();
-            var configurationValues = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ConfigurationValueModel>>(payload);
 
-            // newtonsoft used to serialize entity with dynamic type
             ConfigurationSettingsResult configurationSettingsResult = await _accountService.SaveOrUpdateConfigurationSettings(tenantId, configurationValues, CancellationToken.None).ConfigureAwait(true);
-            var resultValue = Content(JsonSerializer.Serialize(configurationSettingsResult, JsonSettings.Default()), "application/json", Encoding.UTF8);
-            resultValue.StatusCode = 200;
 
-            return resultValue;
+            return Ok(configurationSettingsResult);
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
-﻿namespace Rws.LC.AppBlueprint.Models
+﻿using System.Text.Json.Nodes;
+
+namespace Rws.LC.AppBlueprint.Models
 {
     public class WorkflowConfiguration
     {
@@ -10,6 +12,6 @@
         /// <summary>
         /// The value assigned during workflow configuration
         /// </summary>
-        public dynamic Value { get; set; }
+        public JsonNode Value { get; set; }
     }
 }

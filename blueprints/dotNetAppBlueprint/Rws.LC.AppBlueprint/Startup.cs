@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MongoDB.Bson.Serialization;
 using Rws.LanguageCloud.Authentication.Jws;
 using Rws.LC.AppBlueprint.DAL;
 using Rws.LC.AppBlueprint.Exceptions;
@@ -54,6 +55,8 @@ namespace Rws.LC.AppBlueprint
                     options.TokenValidationParameters.ValidIssuer = Configuration["Authorization:Issuer"];
                     options.TokenValidationParameters.ValidAudience = Configuration["baseUrl"];
                 });
+
+            BsonSerializer.RegisterSerializationProvider(new JsonNodeSerializerProvider());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

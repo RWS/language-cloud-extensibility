@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rws.LC.AppBlueprint.Infrastructure;
 using Rws.LC.AppBlueprint.Models;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Rws.LC.AppBlueprint.Controllers
@@ -33,7 +32,7 @@ namespace Rws.LC.AppBlueprint.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpPost("submit")]
-        public async Task<IActionResult> ProcessTask()
+        public async Task<IActionResult> ProcessTask(AutomaticTaskRequestModel automaticTaskRequest)
         {
             // Endpoint used to receive and process the task from LC
             // This endpoint should only schedule the task and return 202(Accepted)
@@ -41,15 +40,7 @@ namespace Rws.LC.AppBlueprint.Controllers
             // that will send the result to the received callbackUrl
             _logger.LogInformation("Received automatic task request from LC");
 
-            // we deserialize this way to get the dynamic value from WorkflowConfiguration
-            string payload;
-            using (StreamReader sr = new StreamReader(Request.Body))
-            {
-                payload = await sr.ReadToEndAsync();
-            }
-
             var tenantId = HttpContext.User?.GetTenantId();
-            var automaticTaskRequest = Newtonsoft.Json.JsonConvert.DeserializeObject<AutomaticTaskRequestModel>(payload);
 
             // TODO: Replace the following line with your actual processing task(implementation needed)
             await Task.CompletedTask.ConfigureAwait(false);

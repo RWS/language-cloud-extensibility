@@ -8,7 +8,7 @@ using Rws.LC.AppBlueprint.Helpers;
 using Rws.LC.AppBlueprint.Interfaces;
 using Rws.LC.AppBlueprint.Models;
 using Rws.LC.AppBlueprint.Test.Helpers;
-using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -61,7 +61,7 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
 
             Assert.Equal(_configuration["baseUrl"], descriptor["baseUrl"].ToString());
             Assert.Equal("1.0.0", descriptor["version"].ToString());
-            Assert.Equal("1.3", descriptor["descriptorVersion"].ToString());
+            Assert.Equal("1.4", descriptor["descriptorVersion"].ToString());
             Assert.Equal(2, descriptor["extensions"].AsArray().Count);
             Assert.Equal("/v1/health", descriptor["standardEndpoints"]["health"].ToString());
             Assert.Equal("/v1/documentation", descriptor["standardEndpoints"]["documentation"].ToString());
@@ -158,15 +158,19 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
             // then set the configuration settings on the account activation entity
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("ConfigurationRequest.json", stream));
+                var httpContext = new DefaultHttpContext();
+                httpContext.User = _mockTenant.GetDefaultPrincipal();
+                var standardController = BuildStandardController(httpContext);
 
-                var response = await standardController.SetConfigurationSettings().ConfigureAwait(false);
+                var configSettingsRequest = JsonSerializer.Deserialize<List<ConfigurationValueModel>>(File.ReadAllText("TestFiles\\ConfigurationRequest.json"), JsonSettings.Default());
 
-                var configurationSettings = JsonSerializer.Deserialize<ConfigurationSettingsResult>((response as ContentResult).Content, JsonSettings.Default());
+                var response = await standardController.SetConfigurationSettings(configSettingsRequest).ConfigureAwait(false);
+
+                var configurationSettings = (response as OkObjectResult).Value as ConfigurationSettingsResult;
                 Assert.Equal(1, configurationSettings.ItemCount);
                 Assert.Single(configurationSettings.Items);
                 Assert.Equal("SAMPLE_CONFIG_ID", configurationSettings.Items.First().Id);
-                Assert.Equal("sampleConfigValue", Convert.ToString(configurationSettings.Items.First().Value));
+                Assert.Equal("sampleConfigValue", configurationSettings.Items.First().Value.ToString());
             }
         }
 
@@ -182,21 +186,26 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
             // then set the configuration settings on the account activation entity
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("ConfigurationRequest.json", stream));
-                await standardController.SetConfigurationSettings().ConfigureAwait(false);
+                var httpContext = new DefaultHttpContext();
+                httpContext.User = _mockTenant.GetDefaultPrincipal();
+                var standardController = BuildStandardController(httpContext);
+
+                var configSettingsRequest = JsonSerializer.Deserialize<List<ConfigurationValueModel>>(File.ReadAllText("TestFiles\\ConfigurationRequest.json"), JsonSettings.Default());
+
+                await standardController.SetConfigurationSettings(configSettingsRequest).ConfigureAwait(false);
             }
             // prepare context user for the GET config settings request
-            var httpContext = new DefaultHttpContext();
-            httpContext.User = _mockTenant.GetDefaultPrincipal();
-            var testedStandardController = BuildStandardController(httpContext);
+            var httpContext2 = new DefaultHttpContext();
+            httpContext2.User = _mockTenant.GetDefaultPrincipal();
+            var testedStandardController = BuildStandardController(httpContext2);
 
             var response = await testedStandardController.GetConfigurationSettings().ConfigureAwait(false);
 
-            var configurationSettings = JsonSerializer.Deserialize<ConfigurationSettingsResult>((response as ContentResult).Content, JsonSettings.Default());
+            var configurationSettings = (response as OkObjectResult).Value as ConfigurationSettingsResult;
             Assert.Equal(1, configurationSettings.ItemCount);
             Assert.Single(configurationSettings.Items);
             Assert.Equal("SAMPLE_CONFIG_ID", configurationSettings.Items.First().Id);
-            Assert.Equal("sampleConfigValue", Convert.ToString(configurationSettings.Items.First().Value));
+            Assert.Equal("sampleConfigValue", configurationSettings.Items.First().Value.ToString());
         }
 
         [Fact]
@@ -211,13 +220,18 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
             // then set the configuration settings on the account activation entity
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("ConfigurationRequest.json", stream));
-                await standardController.SetConfigurationSettings().ConfigureAwait(false);
+                var httpContext = new DefaultHttpContext();
+                httpContext.User = _mockTenant.GetDefaultPrincipal();
+                var standardController = BuildStandardController(httpContext);
+
+                var configSettingsRequest = JsonSerializer.Deserialize<List<ConfigurationValueModel>>(File.ReadAllText("TestFiles\\ConfigurationRequest.json"), JsonSettings.Default());
+
+                await standardController.SetConfigurationSettings(configSettingsRequest).ConfigureAwait(false);
             }
             // prepare context user for the config validation request
-            var httpContext = new DefaultHttpContext();
-            httpContext.User = _mockTenant.GetDefaultPrincipal();
-            var testedStandardController = BuildStandardController(httpContext);
+            var httpContext2 = new DefaultHttpContext();
+            httpContext2.User = _mockTenant.GetDefaultPrincipal();
+            var testedStandardController = BuildStandardController(httpContext2);
 
             var response = await testedStandardController.ValidateConfiguration().ConfigureAwait(false);
 

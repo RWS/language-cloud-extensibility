@@ -16,11 +16,6 @@ namespace Rws.LC.AppBlueprint.DAL.Entities
         public string TenantId { get; set; }
 
         /// <summary>
-        /// The client credentials.
-        /// </summary>
-        public ClientCredentialsEntity ClientCredentials { get; set; }
-
-        /// <summary>
         /// The configuration values.
         /// </summary>
         public List<ConfigurationValueEntity> ConfigurationValues { get; set; }
