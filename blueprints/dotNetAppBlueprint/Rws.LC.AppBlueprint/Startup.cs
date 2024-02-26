@@ -46,6 +46,13 @@ namespace Rws.LC.AppBlueprint
             services.AddSingleton<IDescriptorService, DescriptorService>();
             services.AddSingleton<IAccountService, AccountService>();
 
+            // this ensures that the services are started and stopped concurrently
+            services.Configure<HostOptions>(options =>
+            {
+                options.ServicesStartConcurrently = true;
+                options.ServicesStopConcurrently = true;
+            });
+
             services.AddAuthentication(JwsDefaults.AuthenticationScheme)
                 .AddJws(options =>
                 {

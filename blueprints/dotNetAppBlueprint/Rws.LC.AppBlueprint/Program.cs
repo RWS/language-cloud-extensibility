@@ -22,6 +22,14 @@ namespace Rws.LC.AppBlueprint
             });
 
             var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+
+            System.Net.ServicePointManager.ServerCertificateValidationCallback +=
+                (sender, certificate, chain, sslPolicyErrors) =>
+                {
+                    logger.Error($"SSL Policy Errors: {sslPolicyErrors}");
+                    return true;
+                };
+
             try
             {
                 logger.Debug("init main");

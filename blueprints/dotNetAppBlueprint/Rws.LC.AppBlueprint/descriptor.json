@@ -43,7 +43,8 @@
 						"id": "SAMPLE_AUTOMATICTASK_EXTENSION_CONFIG_ID",
 						"description": "SAMPLE_AUTOMATICTASK_EXTENSION_CONFIG_DESCRIPTION",
 						"optional": false,
-						"dataType": "string"
+						"dataType": "string",
+						"defaultValue": "default wf config"
 					}
 				]
 			}
@@ -64,7 +65,8 @@
 			"id": "SAMPLE_CONFIG_ID",
 			"description": "SAMPLE_CONFIG_DESCRIPTION",
 			"optional": false,
-			"dataType": "string"
+			"dataType": "string",
+			"defaultValue": "default config"
 		}
 	],
 	"releaseNotes": "Initial plugin",
