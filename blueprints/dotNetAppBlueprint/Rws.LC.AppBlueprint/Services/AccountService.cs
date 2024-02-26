@@ -105,7 +105,7 @@ namespace Rws.LC.AppBlueprint.Services
             var accountInfo = await _repository.GetAccountInfoByTenantId(tenantId).ConfigureAwait(false);
             if (accountInfo == null)
             {
-                throw new AccountValidationException($"Account {tenantId} is not activated!", new Details { Code = ErrorCodes.AccountNotActivated, Name = nameof(tenantId), Value = tenantId });
+                throw new AccountValidationException($"Account {tenantId} is not installed!", new Details { Code = ErrorCodes.AccountNotInstalled, Name = nameof(tenantId), Value = tenantId });
             }
 
             if (accountInfo.ConfigurationValues == null)
@@ -122,7 +122,7 @@ namespace Rws.LC.AppBlueprint.Services
             AccountInfoEntity accountInfo = await _repository.GetAccountInfoByTenantId(tenantId).ConfigureAwait(false);
             if (accountInfo == null)
             {
-                throw new AccountValidationException($"Account {tenantId} is not activated!", new Details { Code = ErrorCodes.AccountNotActivated, Name = nameof(tenantId), Value = tenantId });
+                throw new AccountValidationException($"Account {tenantId} is not installed!", new Details { Code = ErrorCodes.AccountNotInstalled, Name = nameof(tenantId), Value = tenantId });
             }
 
             accountInfo = UpdateConfigurationsForAccount(accountInfo, configurationValues);
@@ -137,7 +137,7 @@ namespace Rws.LC.AppBlueprint.Services
             var accountInfo = await _repository.GetAccountInfoByTenantId(tenantId).ConfigureAwait(false);
             if (accountInfo == null)
             {
-                throw new AccountValidationException($"Account {tenantId} is not activated!", new Details { Code = ErrorCodes.AccountNotActivated, Name = nameof(tenantId), Value = tenantId });
+                throw new AccountValidationException($"Account {tenantId} is not installed!", new Details { Code = ErrorCodes.AccountNotInstalled, Name = nameof(tenantId), Value = tenantId });
             }
 
             var configurations = accountInfo.ConfigurationValues;

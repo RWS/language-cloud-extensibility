@@ -9,8 +9,8 @@
         public const string InvalidType = "INVALID_TYPE";
         public const string InternalServerError = "INTERNAL_SERVER_ERROR";
         public const string InvalidAccount = "INVALID_ACCOUNT_ID";
-        public const string AccountNotActivated = "ACCOUNT_NOT_FOUND";
-        public const string AccountAlreadyActivated = "ACCOUNT_ALREADY_ACTIVATED";
+        public const string AccountNotInstalled = "ACCOUNT_NOT_FOUND";
+        public const string AccountAlreadyInstalled = "ACCOUNT_ALREADY_ACTIVATED";
         public const string InvalidInput = "INVALID_INPUT";
         public const string InternalError = "INTERNAL_ERROR";
         public const string InvalidConfiguration = "invalidConfiguration";

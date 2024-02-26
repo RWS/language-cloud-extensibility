@@ -13,13 +13,13 @@
         UNREGISTERED,
 
         /// <summary>
-        /// App was activated on a tenant account.
+        /// App was installed on a tenant account.
         /// </summary>
-        ACTIVATED,
+        INSTALLED,
 
         /// <summary>
-        /// App was deactivated on a tenant account.
+        /// App was uninstalled on a tenant account.
         /// </summary>
-        DEACTIVATED
+        UNINSTALLED
     }
 }

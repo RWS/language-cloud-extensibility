@@ -125,7 +125,7 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
         {
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("ActivatedEventRequest.json", stream));
+                var standardController = BuildStandardController(BuildRequestContext("InstalledEventRequest.json", stream));
 
                 var response = await standardController.AppLifecycle().ConfigureAwait(false);
 
@@ -138,7 +138,7 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
         {
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("DeactivatedEventRequest.json", stream));
+                var standardController = BuildStandardController(BuildRequestContext("UninstalledEventRequest.json", stream));
 
                 var response = await standardController.AppLifecycle().ConfigureAwait(false);
 
@@ -152,10 +152,10 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
             // first install the app
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("ActivatedEventRequest.json", stream));
+                var standardController = BuildStandardController(BuildRequestContext("InstalledEventRequest.json", stream));
                 await standardController.AppLifecycle().ConfigureAwait(false);
             }
-            // then set the configuration settings on the account activation entity
+            // then set the configuration settings on the account install entity
             using (var stream = new MemoryStream())
             {
                 var httpContext = new DefaultHttpContext();
@@ -180,10 +180,10 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
             // first install the app
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("ActivatedEventRequest.json", stream));
+                var standardController = BuildStandardController(BuildRequestContext("InstalledEventRequest.json", stream));
                 await standardController.AppLifecycle().ConfigureAwait(false);
             }
-            // then set the configuration settings on the account activation entity
+            // then set the configuration settings on the account install entity
             using (var stream = new MemoryStream())
             {
                 var httpContext = new DefaultHttpContext();
@@ -214,10 +214,10 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
             // first install the app
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("ActivatedEventRequest.json", stream));
+                var standardController = BuildStandardController(BuildRequestContext("InstalledEventRequest.json", stream));
                 await standardController.AppLifecycle().ConfigureAwait(false);
             }
-            // then set the configuration settings on the account activation entity
+            // then set the configuration settings on the account install entity
             using (var stream = new MemoryStream())
             {
                 var httpContext = new DefaultHttpContext();

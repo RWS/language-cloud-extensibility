@@ -146,7 +146,7 @@ namespace Rws.LC.AppBlueprint.Controllers
                     AppLifecycleEvent<RegisteredEvent> registeredEvent = JsonSerializer.Deserialize<AppLifecycleEvent<RegisteredEvent>>(payload, JsonSettings.Default());
                     await _accountService.SaveRegistrationInfo(registeredEvent.Data, CancellationToken.None).ConfigureAwait(true);
                     break;
-                case AppLifecycleEventEnum.ACTIVATED:
+                case AppLifecycleEventEnum.INSTALLED:
                     _logger.LogInformation("App Installed Event Received for tenant id {TenantId}.", tenantId);
 
                     await _accountService.SaveAccountInfo(tenantId, CancellationToken.None).ConfigureAwait(true);
@@ -161,7 +161,7 @@ namespace Rws.LC.AppBlueprint.Controllers
                     await _accountService.RemoveRegistrationInfo(CancellationToken.None).ConfigureAwait(true);
                     break;
 
-                case AppLifecycleEventEnum.DEACTIVATED:
+                case AppLifecycleEventEnum.UNINSTALLED:
                     // This is the event notifying that the App has been uninstalled from a tenant account.
                     // No further details are available for that event.
                     _logger.LogInformation("App Uninstalled Event Received.");

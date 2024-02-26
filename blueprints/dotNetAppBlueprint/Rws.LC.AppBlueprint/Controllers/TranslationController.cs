@@ -60,7 +60,7 @@ namespace Rws.LC.AppBlueprint.Controllers
             // Example how to retrieve headers information
             string extensionPointVersion = Request.HttpContext.Request.Headers.SingleOrDefault(h => h.Key.Equals(Constants.ExtensionPointVersion, StringComparison.OrdinalIgnoreCase)).Value;
             string extensionId = Request.HttpContext.Request.Headers.SingleOrDefault(h => h.Key.Equals(Constants.ExtensionId, StringComparison.OrdinalIgnoreCase)).Value;
-            string appVersion = Request.HttpContext.Request.Headers.SingleOrDefault(h => h.Key.Equals(Constants.AddonVersion, StringComparison.OrdinalIgnoreCase)).Value;
+            string appVersion = Request.HttpContext.Request.Headers.SingleOrDefault(h => h.Key.Equals(Constants.AppVersion, StringComparison.OrdinalIgnoreCase)).Value;
 
             // TODO: Replace the following line with your actual "GetEngines" task(implementation needed)
             var result = new TranslationEnginesResult(new List<TranslationEngineModel>() { new TranslationEngineModel() });
