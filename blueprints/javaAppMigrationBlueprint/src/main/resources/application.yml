@@ -1,0 +1,55 @@
+application:
+  name: lc.app.blueprint
+
+# TODO: replace with a real URL
+baseUrl: "replace-me"
+
+server:
+  port: 5000
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,application/octet-stream,multipart/form-data
+    min-response-size: 2048
+management:
+  server:
+    port: 25000
+  endpoints:
+    web.exposure.include: "*"
+  endpoint:
+    health:
+      show-details: always
+    restart:
+      enabled: true
+      pause-endpoint:
+        enabled: true
+
+# spring related settings
+spring:
+  application:
+    name: lc-blueprint-app
+  data:
+    mongodb:
+      authentication-database: admin
+      database: lc-blueprint-app
+      uri: mongodb://localhost:27017
+      ssl-enabled: false
+      auto-index-creation: false
+  jackson:
+    serialization:
+      write_dates_as_timestamps: false
+
+# Logging
+logging:
+  level:
+    com.rws: INFO
+
+# TODO: replace with a real doc URL
+documentation.url: "replace-me"
+
+integration:
+  public-api:
+    basePublicApiV1Url: https://lc-api.sdl.com/public-api/v1
+    retrievePublicKeyByIdUrl: ${integration.public-api.basePublicApiV1Url}/.well-known/jwks.json/{kid}
+
+authentication:
+  lc-issuer: https://languagecloud.rws.com/

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Config for container-based deployments -->
+<configuration>
+
+    <springProperty scope="context" name="SERVICE_ID" source="application.name"/>
+
+    <conversionRule conversionWord="traceId" converterClass="com.rws.lt.lc.blueprint.logging.TraceIdConverter" />
+    <conversionRule conversionWord="accountId" converterClass="com.rws.lt.lc.blueprint.logging.AccountIdConverter"/>
+
+    <property name="LOG_PATTERN"
+              value="%date %level [%thread] [%traceId] [${SERVICE_ID}] [%accountId] %logger{10} [%file:%line] %msg%n"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>
