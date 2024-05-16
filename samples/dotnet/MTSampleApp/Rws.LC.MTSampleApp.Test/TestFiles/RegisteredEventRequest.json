@@ -1,0 +1,10 @@
+{
+  "id": "REGISTERED",
+  "timestamp": "2022-02-28T06:13:31.4037797Z",
+  "data": {
+    "clientCredentials": {
+      "clientId": "someTestClientId",
+      "clientSecret": "someTestClientSecret"
+    }
+  }
+}
