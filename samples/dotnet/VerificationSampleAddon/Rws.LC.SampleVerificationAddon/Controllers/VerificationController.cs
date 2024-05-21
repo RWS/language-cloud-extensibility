@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Rws.LC.SampleVerificationAddon.Infrastructure;
-using Rws.LC.SampleVerificationAddon.Interfaces;
 using Rws.LC.SampleVerificationAddon.RestService.Interfaces;
 using Rws.LC.SampleVerificationAddon.RestService.Models;
 using System.Threading;
@@ -15,57 +13,19 @@ namespace Rws.LC.SampleVerificationAddon.RestService.Controllers
     [ApiController]
     public class VerificationController : ControllerBase
     {
-        /// <summary>
-        /// The configuration
-        /// </summary>
-        private IConfiguration _configuration;
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
         private ILogger _logger;
-
-        /// <summary>
-        /// The descriptor service.
-        /// </summary>
-        private IDescriptorService _descriptorService;
-
-        /// <summary>
-        /// The account service.
-        /// </summary>
-        private IAccountService _accountService;
-
-        /// <summary>
-        /// The Verification Service
-        /// </summary>
         private IVerificationService _verificationService;
 
         /// <summary>
-        /// The health reporter.
+        /// Initializes a new instance of the <see cref="VerificationController"/> class.
         /// </summary>
-        private IHealthReporter _healthReporter;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AccountService"/> class.
-        /// </summary>
-        /// <param name="configuration">The configuration.</param>
-        /// <param name="logger">The logger.</param>
-        /// <param name="descriptorService">The descriptor service.</param>
-        /// <param name="accountService">The account service.</param>
-        /// <param name="healthReporter">The health reporter.</param>
-        public VerificationController(IConfiguration configuration,
-            ILogger<VerificationController> logger,
-            IDescriptorService descriptorService,
-            IAccountService accountService,
-            IVerificationService verificationService,
-            IHealthReporter healthReporter)
+        /// <param name="logger">logger for this class instance</param>
+        /// <param name="verificationService">service with main business logic</param>
+        public VerificationController(ILogger<VerificationController> logger,
+            IVerificationService verificationService)
         {
-            _configuration = configuration;
             _logger = logger;
-            _descriptorService = descriptorService;
-            _accountService = accountService;
             _verificationService = verificationService;
-            _healthReporter = healthReporter;
         }
 
         /// <summary>
