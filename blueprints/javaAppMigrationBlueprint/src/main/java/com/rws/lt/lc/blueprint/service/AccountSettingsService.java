@@ -70,7 +70,7 @@ public class AccountSettingsService {
     public void handleAppEvent(UpdatedEvent updatedEvent) {
         var details = updatedEvent.getData();
         var tenantId = RequestLocalContext.getActiveAccountId();
-        var entity = appRegistrationRepository.findByAccountId(tenantId);
+        var entity = Optional.ofNullable(appRegistrationRepository.findFirst()).orElse(new AppRegistration());
 
         entity.setAccountId(tenantId);
         entity.setClientCredentials(new ClientCredentials(details.getClientCredentials()));
@@ -91,7 +91,7 @@ public class AccountSettingsService {
     public void handleAppEvent(RegisteredEvent registeredEvent) {
         var details = registeredEvent.getData();
         var tenantId = RequestLocalContext.getActiveAccountId();
-        var entity = appRegistrationRepository.findByAccountId(tenantId);
+        var entity = appRegistrationRepository.findFirst();
 
         if (entity != null) {
             LOGGER.debug("App already registered for tenantId {}", tenantId);

@@ -238,7 +238,7 @@ public class AccountSettingsServiceTest {
         registeredEvent.setData(details);
 
         RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
-        when(appRegistrationRepository.findByAccountId(eq(ACCOUNT_ID))).thenReturn(null);
+        when(appRegistrationRepository.findFirst()).thenReturn(null);
         accountSettingsService.handleAppEvent(registeredEvent);
 
         ArgumentCaptor<AppRegistration> appRegistrationArgumentCaptor = ArgumentCaptor.forClass(AppRegistration.class);
@@ -257,7 +257,7 @@ public class AccountSettingsServiceTest {
         var registeredEvent = new RegisteredEvent();
         var registeredApp = new AppRegistration();
         RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
-        when(appRegistrationRepository.findByAccountId(ACCOUNT_ID)).thenReturn(registeredApp);
+        when(appRegistrationRepository.findFirst()).thenReturn(registeredApp);
 
         accountSettingsService.handleAppEvent(registeredEvent);
 
