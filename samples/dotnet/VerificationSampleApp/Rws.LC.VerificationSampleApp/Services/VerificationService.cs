@@ -20,7 +20,7 @@ using System.Globalization;
 using Rws.LC.VerificationSampleApp.Verifiers.Resources;
 using Rws.LC.VerificationSampleApp.Verifiers.Settings;
 using System.Collections.Concurrent;
-using Rws.LC.VerificationSampleApp.Exceptions;
+using Rws.LC.VerificationSampleApp.Resources;
 
 namespace Rws.LC.VerificationSampleApp.Services
 {
@@ -145,7 +145,8 @@ namespace Rws.LC.VerificationSampleApp.Services
                 DetailedErrorMessage = MessageResource.MessageLengthExceeded_DetailedDescription,
                 ErrorMessage = MessageResource.MessageLengthExceeded_EM,
                 FriendlyName = MessageResource.MessageLengthExceeded_FriendlyName,
-                MessageType = "lc-verification-sample.LengthCheck",
+                // Change the ID below to match the extension ID - this ID needs to be unique across all extensions
+                MessageType = "SAMPLE_VERIFICATION_EXTENSION_ID.LengthCheck",
                 Suggestion = MessageResource.MessageLengthExceeded_Suggestion
             };
             response.MessageTypes = new List<MessageTypeLocalizationData> { messageTypeLocalizationData};   

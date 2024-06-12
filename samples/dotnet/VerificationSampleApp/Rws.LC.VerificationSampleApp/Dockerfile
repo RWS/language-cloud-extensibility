@@ -2,6 +2,8 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
 
+RUN apk add icu-libs
+
 WORKDIR /app
 EXPOSE 5000
 

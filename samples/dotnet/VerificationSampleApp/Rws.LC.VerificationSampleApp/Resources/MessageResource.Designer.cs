@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Rws.LC.VerificationSampleApp.Verifiers.Resources {
+namespace Rws.LC.VerificationSampleApp.Resources {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Rws.LC.VerificationSampleApp.Verifiers.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Rws.LC.VerificationSampleApp.Verifiers.Resources.MessageResource", typeof(MessageResource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Rws.LC.VerificationSampleApp.Resources.MessageResource", typeof(MessageResource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

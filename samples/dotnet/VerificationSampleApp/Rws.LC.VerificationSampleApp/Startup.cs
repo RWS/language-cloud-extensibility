@@ -12,6 +12,8 @@ using Rws.LC.VerificationSampleApp.Exceptions;
 using Rws.LC.VerificationSampleApp.Helpers;
 using Rws.LC.VerificationSampleApp.Interfaces;
 using Rws.LC.VerificationSampleApp.Services;
+using Rws.LC.VerificationSampleApp.Verifiers.Interfaces;
+using Rws.LC.VerificationSampleApp.Verifiers.Other;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -45,6 +47,17 @@ namespace Rws.LC.VerificationSampleApp
             services.AddSingleton<IAppRegistrationRepository, AppRegistrationRepository>();
             services.AddSingleton<IDescriptorService, DescriptorService>();
             services.AddSingleton<IAccountService, AccountService>();
+
+            services.AddSingleton<IVerificationService, VerificationService>();
+
+            services.AddHostedService<QueuedHostedService>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+
+            services.AddSingleton<IBcmServiceClient, BcmServiceClient>();
+            services.AddSingleton<IVerificationServiceClient, VerificationServiceClient>();
+            services.AddSingleton<IFileManagementServiceClient, FileManagementServiceClient>();
+            services.AddSingleton<IExternalJobServiceClient, ExternalJobServiceClient>();
+            services.AddSingleton<IVerifierFactory, VerifierFactory>();
 
             // this ensures that the services are started and stopped concurrently
             services.Configure<HostOptions>(options =>
