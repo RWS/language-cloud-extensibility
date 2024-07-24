@@ -77,4 +77,9 @@
 		"email": "sample_vendor@email.com"
 	},
 	"descriptorVersion": "1.4"
+	// will be replaced by the actual regional base URLs from appsettings.json
+	//"regionalBaseUrls": {
+	//	"eu": "https://eu.api.base-url.com",
+	//	"ca": "https://ca.api.base-url.com"
+	//}
 }
