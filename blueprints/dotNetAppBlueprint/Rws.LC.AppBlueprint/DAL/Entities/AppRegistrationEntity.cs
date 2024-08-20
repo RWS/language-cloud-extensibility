@@ -8,7 +8,12 @@ namespace Rws.LC.AppBlueprint.DAL.Entities
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
+        [BsonIgnoreIfDefault]
         public string Id { get; set; }
+
+        public string TenantId { get; set; }
+
+        public string AppId { get; set; }
 
         /// <summary>
         /// The client credentials.

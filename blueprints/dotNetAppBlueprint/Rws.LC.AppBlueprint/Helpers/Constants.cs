@@ -3,9 +3,11 @@
     public class Constants
     {
         #region Headers
-        public const string ExtensionPointVersion = "X-LC-ExtensionPointVersion";
-        public const string ExtensionId = "X-LC-ExtensionId";
-        public const string AppVersion = "X-LC-AppVersion";
+        public const string ExtensionPointVersionHeader = "X-LC-ExtensionPointVersion";
+        public const string ExtensionIdHeader = "X-LC-ExtensionId";
+        public const string AppVersionHeader = "X-LC-AppVersion";
+        public const string DevTenantIdHeader = "X-LC-DevTenantId";
+        public const string AppIdHeader = "X-LC-AppId";
         #endregion
     }
 }

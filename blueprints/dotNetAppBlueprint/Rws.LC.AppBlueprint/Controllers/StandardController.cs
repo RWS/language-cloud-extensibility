@@ -7,8 +7,10 @@ using Rws.LC.AppBlueprint.Helpers;
 using Rws.LC.AppBlueprint.Infrastructure;
 using Rws.LC.AppBlueprint.Interfaces;
 using Rws.LC.AppBlueprint.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
@@ -135,6 +137,8 @@ namespace Rws.LC.AppBlueprint.Controllers
             }
 
             var tenantId = HttpContext.User?.GetTenantId();
+            string devTenantId = HttpContext.Request.Headers.SingleOrDefault(h => h.Key.Equals(Constants.DevTenantIdHeader, StringComparison.OrdinalIgnoreCase)).Value;
+            string appId = HttpContext.Request.Headers.SingleOrDefault(h => h.Key.Equals(Constants.AppIdHeader, StringComparison.OrdinalIgnoreCase)).Value;
 
             var lifecycle = JsonSerializer.Deserialize<AppLifecycleEvent>(payload, JsonSettings.Default());
             switch (lifecycle.Id)
@@ -144,17 +148,19 @@ namespace Rws.LC.AppBlueprint.Controllers
                     // This is the event notifying that the App has been registered in Language Cloud
                     // no further details are available for that event
                     AppLifecycleEvent<RegisteredEvent> registeredEvent = JsonSerializer.Deserialize<AppLifecycleEvent<RegisteredEvent>>(payload, JsonSettings.Default());
-                    await _accountService.SaveRegistrationInfo(registeredEvent.Data, CancellationToken.None).ConfigureAwait(true);
+                    await _accountService.SaveRegistrationInfo(registeredEvent.Data, tenantId, appId, CancellationToken.None).ConfigureAwait(true);
                     break;
                 case AppLifecycleEventEnum.INSTALLED:
                     _logger.LogInformation("App Installed Event Received for tenant id {TenantId}.", tenantId);
 
+                    await _accountService.ValidateLifecycleEvent(devTenantId, appId);
                     await _accountService.SaveAccountInfo(tenantId, CancellationToken.None).ConfigureAwait(true);
                     break;
                 case AppLifecycleEventEnum.UNREGISTERED:
                     // This is the event notifying that the App has been unregistered/deleted from Language Cloud.
                     // No further details are available for that event.
                     _logger.LogInformation("App Unregistered Event Received.");
+                    await _accountService.ValidateLifecycleEvent(devTenantId, appId);
                     // All the tenant information should be removed.
                     await _accountService.RemoveAccounts(CancellationToken.None).ConfigureAwait(true);
                     // Remove the registration information
@@ -165,6 +171,7 @@ namespace Rws.LC.AppBlueprint.Controllers
                     // This is the event notifying that the App has been uninstalled from a tenant account.
                     // No further details are available for that event.
                     _logger.LogInformation("App Uninstalled Event Received.");
+                    await _accountService.ValidateLifecycleEvent(devTenantId, appId);
                     await _accountService.RemoveAccountInfo(tenantId, CancellationToken.None).ConfigureAwait(true);
                     break;
             }
