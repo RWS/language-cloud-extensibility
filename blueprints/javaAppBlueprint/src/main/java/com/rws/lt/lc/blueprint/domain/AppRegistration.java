@@ -13,6 +13,9 @@ public class AppRegistration extends PersistedDomain {
     @Field("accountId")
     private String accountId;
 
+    @Field("appId")
+    private String appId;
+
     @Field("clientCredentials")
     private ClientCredentials clientCredentials;
 }

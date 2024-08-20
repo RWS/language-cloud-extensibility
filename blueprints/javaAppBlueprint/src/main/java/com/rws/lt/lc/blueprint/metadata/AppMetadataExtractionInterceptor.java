@@ -30,6 +30,12 @@ public class AppMetadataExtractionInterceptor extends HandlerInterceptorAdapter 
         // access this property anywhere you need with RequestLocalContext.getFromLocalContext(ADDON_VERSION_CONTEXT)
         Optional.ofNullable(request.getHeader(APP_VERSION_HEADER))
                 .ifPresent(addonVersion -> RequestLocalContext.putInLocalContext(APP_VERSION_CONTEXT, addonVersion));
+        // access this property anywhere you need with RequestLocalContext.getFromLocalContext(DEV_TENANT_ID_CONTEXT)
+        Optional.ofNullable(request.getHeader(DEV_TENANT_ID_HEADER))
+                .ifPresent(devTenantId -> RequestLocalContext.putInLocalContext(DEV_TENANT_ID_CONTEXT, devTenantId));
+        // access this property anywhere you need with RequestLocalContext.getFromLocalContext(APP_ID_CONTEXT)
+        Optional.ofNullable(request.getHeader(APP_ID_HEADER))
+                .ifPresent(appId -> RequestLocalContext.putInLocalContext(APP_ID_CONTEXT, appId));
     }
 
     @Override
