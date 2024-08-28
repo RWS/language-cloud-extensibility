@@ -1,0 +1,41 @@
+﻿{
+	"name": "Verification Sample App",
+	"version": "1.0.0",
+	"description": "Verification Sample App",
+	"extensions": [
+		{
+			"id": "SAMPLE_VERIFICATION_EXTENSION_ID",
+			"name": "SAMPLE_VERIFICATION_EXTENSION_NAME",
+			"extensionPointVersion": "1",
+			"extensionPointId": "lc.verificationprovider",
+			"description": "Verification Extension allowing for the verification of document content",
+			"configuration": {
+				"endpoints": {
+					"lc.verification.startVerification": "/api/verification/v1/verify/document",
+					"lc.verification.verifySegment": "/api/verification/v1/verify/segment",
+					"lc.verification.getMessagesByCulture": "/api/verification/v1/messages",
+					"lc.verification.getSettingsSchema": "/api/verification/v1/schemas"
+				},
+				"validationInputType": "BilingualDocument"
+			}
+		}
+	],
+	"standardEndpoints": {
+		"health": "/v1/health",
+		"documentation": "/v1/documentation",
+		"appLifecycle": "/v1/app-lifecycle",
+		"configuration": "/v1/configuration",
+		"configurationValidation": "/v1/configuration/validation",
+		"privacyPolicy": "/v1/privacyPolicy",
+		"termsAndConditions": "/v1/termsAndConditions"
+	},
+	"configurations": [],
+	"releaseNotes": "Sample verification plugin",
+	"minimumVersion": "1.0.0",
+	"vendor": {
+		"name": "SAMPLE_VENDOR_NAME",
+		"url": "SAMPLE_VENDOR_URL",
+		"email": "sample_vendor@email.com"
+	},
+	"descriptorVersion": "1.4"
+}
