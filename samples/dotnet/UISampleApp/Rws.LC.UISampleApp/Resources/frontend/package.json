@@ -1,23 +1,21 @@
 {
-  "name": "@sdl/frontend-extension",
+  "name": "trados-ui-extension-sample",
   "version": "1.0.0",
-  "description": "A frontend extension.",
+  "description": "Trados UI extension sample",
   "main": "index.js",
   "sideEffects": false,
   "scripts": {
-    "npm-auth": "npm config set @sdl:registry https://nexus.sdl.com/repository/npm-internal/",
     "build-dev": "webpack --progress --mode=development",
     "build": "webpack --progress --mode=production"
   },
-  "author": "SDL",
+  "author": "RWS",
   "license": "MIT",
   "dependencies": {
-    "@sdl/extensibility": "^1.0.0",
-    "@sdl/extensibility-types": "^1.0.0"
+    "@trados/trados-ui-extensibility": "^0.1.4"
   },
   "devDependencies": {
     "ts-loader": "9.5.1",
-    "webpack": "5.91.0",
+    "webpack": "5.94.0",
     "webpack-cli": "5.1.4"
   }
 }

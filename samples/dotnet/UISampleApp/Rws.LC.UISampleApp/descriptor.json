@@ -7,10 +7,10 @@
 			"id": "SAMPLE_UI_EXTENSION_ID",
 			"extensionPointId": "lc.ui",
 			"name": "UI Extensibility App",
-			"description": "UI Extensibility in Inbox and Projects",
+			"description": "UI Extensibility examples in Projects view",
 			"extensionPointVersion": "1",
 			"configuration": {
-				"scriptPath": "/api/files/frontend/dist/bundle.js",
+				"scriptPath": "/api/files/frontend/dist/my-ui-extension-script.js",
 				"endpoints": {}
 			}
 		}

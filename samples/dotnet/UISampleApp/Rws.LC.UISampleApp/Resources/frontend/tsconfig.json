@@ -5,6 +5,7 @@
     "lib": [ "dom", "ES2015" ],
     "strict": true,
     "esModuleInterop": true,
+    "moduleResolution": "node",
     "skipLibCheck": true,
     "types": []
   }

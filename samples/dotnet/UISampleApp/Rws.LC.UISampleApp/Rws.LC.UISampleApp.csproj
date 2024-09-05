@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="Resources\frontend\dist\bundle.js">
+        <Content Include="Resources\frontend\dist\my-ui-extension-script.js">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
