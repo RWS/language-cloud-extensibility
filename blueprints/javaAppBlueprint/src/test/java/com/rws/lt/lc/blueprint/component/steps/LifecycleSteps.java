@@ -3,7 +3,6 @@ package com.rws.lt.lc.blueprint.component.steps;
 import com.rws.lt.lc.blueprint.transfer.lifecycle.*;
 import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 
 import java.util.Date;
@@ -20,9 +19,10 @@ public class LifecycleSteps extends TestStepsBase {
     }
 
     @When("I install the app")
-    public void iActivateTheApp() {
+    public void iInstallTheApp() {
         InstalledEvent event = new InstalledEvent();
         event.setTimestamp(String.valueOf(new Date()));
+        event.setData(new InstalledEventDetails("eu"));
         exchange("/v1/app-lifecycle", event, HttpMethod.POST, Object.class);
     }
 
@@ -37,7 +37,7 @@ public class LifecycleSteps extends TestStepsBase {
     }
 
     @When("I uninstall the app")
-    public void iSendAccountDeactivate() {
+    public void iSendAccountUninstall() {
         UninstalledEvent event = new UninstalledEvent();
         event.setTimestamp(String.valueOf(new Date()));
         exchange("/v1/app-lifecycle", event, HttpMethod.POST, Object.class);

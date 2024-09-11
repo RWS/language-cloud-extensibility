@@ -169,6 +169,7 @@ public class AccountSettingsServiceTest {
     public void testInstalledAppEvent() {
         var installedEvent = new InstalledEvent();
         installedEvent.setTimestamp(Long.toString(System.currentTimeMillis()));
+        installedEvent.setData(new InstalledEventDetails("eu"));
 
         RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
 
@@ -186,6 +187,7 @@ public class AccountSettingsServiceTest {
     public void testActivatedAppEventAlreadyActivated() {
         var installedEvent = new InstalledEvent();
         installedEvent.setTimestamp(Long.toString(System.currentTimeMillis()));
+        installedEvent.setData(new InstalledEventDetails("eu"));
 
         when(settingsRepository.findAccountSettings(eq(ACCOUNT_ID))).thenReturn(null);
         accountSettingsService.handleAppEvent((AppLifecycleEvent) installedEvent);

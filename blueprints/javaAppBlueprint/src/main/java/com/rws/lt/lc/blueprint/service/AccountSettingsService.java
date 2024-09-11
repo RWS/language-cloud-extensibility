@@ -61,6 +61,7 @@ public class AccountSettingsService {
 
         entity = new AccountSettings();
         entity.setAccountId(tenantId);
+        entity.setRegion(lifecycleEvent.getData().getRegion());
 
         accountSettingsRepository.save(entity);
     }
