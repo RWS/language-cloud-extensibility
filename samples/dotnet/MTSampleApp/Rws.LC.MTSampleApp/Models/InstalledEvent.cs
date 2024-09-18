@@ -3,8 +3,8 @@
     public class InstalledEvent
     {
         /// <summary>
-        /// The client credentials.
+        /// The tenant region.
         /// </summary>
-        public ClientCredentials ClientCredentials { get; set; }
+        public string Region { get; set; }
     }
 }
