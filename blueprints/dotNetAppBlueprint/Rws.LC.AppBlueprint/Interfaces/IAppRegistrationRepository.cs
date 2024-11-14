@@ -19,6 +19,14 @@ namespace Rws.LC.AppBlueprint.Interfaces
         Task<AppRegistrationEntity> GetRegistrationInfo();
 
         /// <summary>
+        /// Retrieves the app registration entity.
+        /// </summary>
+        /// <param name="tenantId">The tenant id.</param>
+        /// <param name="appId">The app id.</param>
+        /// <returns>The app registration entity</returns>
+        Task<AppRegistrationEntity> GetRegistrationInfo(string tenantId, string appId);
+
+        /// <summary>
         /// Removes the app registration entity.
         /// </summary>
         /// <returns></returns>

@@ -58,9 +58,9 @@ namespace Rws.LC.AppBlueprint.Controllers
             _logger.LogInformation("Getting translation engines");
 
             // Example how to retrieve headers information
-            string extensionPointVersion = Request.HttpContext.Request.Headers.SingleOrDefault(h => h.Key.Equals(Constants.ExtensionPointVersion, StringComparison.OrdinalIgnoreCase)).Value;
-            string extensionId = Request.HttpContext.Request.Headers.SingleOrDefault(h => h.Key.Equals(Constants.ExtensionId, StringComparison.OrdinalIgnoreCase)).Value;
-            string appVersion = Request.HttpContext.Request.Headers.SingleOrDefault(h => h.Key.Equals(Constants.AppVersion, StringComparison.OrdinalIgnoreCase)).Value;
+            string extensionPointVersion = Request.HttpContext.Request.Headers.SingleOrDefault(h => h.Key.Equals(Constants.ExtensionPointVersionHeader, StringComparison.OrdinalIgnoreCase)).Value;
+            string extensionId = Request.HttpContext.Request.Headers.SingleOrDefault(h => h.Key.Equals(Constants.ExtensionIdHeader, StringComparison.OrdinalIgnoreCase)).Value;
+            string appVersion = Request.HttpContext.Request.Headers.SingleOrDefault(h => h.Key.Equals(Constants.AppVersionHeader, StringComparison.OrdinalIgnoreCase)).Value;
 
             // TODO: Replace the following line with your actual "GetEngines" task(implementation needed)
             var result = new TranslationEnginesResult(new List<TranslationEngineModel>() { new TranslationEngineModel() });

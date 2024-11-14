@@ -5,6 +5,7 @@ import com.rws.lt.lc.blueprint.domain.AppRegistration;
 import com.rws.lt.lc.blueprint.domain.ClientCredentials;
 import com.rws.lt.lc.blueprint.exception.InvalidConfigurationException;
 import com.rws.lt.lc.blueprint.exception.NotAuthorizedException;
+import com.rws.lt.lc.blueprint.exception.NotFoundException;
 import com.rws.lt.lc.blueprint.exception.ValidationException;
 import com.rws.lt.lc.blueprint.persistence.AccountSettingsRepository;
 import com.rws.lt.lc.blueprint.persistence.AppRegistrationRepository;
@@ -14,10 +15,14 @@ import com.rws.lt.lc.blueprint.transfer.ErrorResponse;
 import com.rws.lt.lc.blueprint.transfer.lifecycle.*;
 import com.rws.lt.lc.blueprint.util.RequestLocalContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+
+import static com.rws.lt.lc.blueprint.metadata.AppMetadataConstants.APP_ID_CONTEXT;
+import static com.rws.lt.lc.blueprint.metadata.AppMetadataConstants.DEV_TENANT_ID_CONTEXT;
 
 @Slf4j
 @Service
@@ -39,17 +44,21 @@ public class AccountSettingsService {
     public void handleAppEvent(AppLifecycleEvent lifecycleEvent) {
         LOGGER.debug("appLifecycleEvent >> with type {} at {}", lifecycleEvent.getId(), lifecycleEvent.getTimestamp());
         if (lifecycleEvent instanceof InstalledEvent) {
+            validateLifeCycleEvent();
             handleAppEvent((InstalledEvent) lifecycleEvent);
         } else if (lifecycleEvent instanceof RegisteredEvent) {
+            // can't validate lifecycle until the app is registered
             handleAppEvent((RegisteredEvent) lifecycleEvent);
         } else if (lifecycleEvent instanceof UninstalledEvent) {
+            validateLifeCycleEvent();
             handleAppEvent((UninstalledEvent) lifecycleEvent);
         } else if (lifecycleEvent instanceof UnregisteredEvent) {
+            validateLifeCycleEvent();
             handleAppEvent((UnregisteredEvent) lifecycleEvent);
         }
     }
 
-    public void handleAppEvent(InstalledEvent lifecycleEvent) {
+    private void handleAppEvent(InstalledEvent lifecycleEvent) {
         LOGGER.debug("handleAppEvent >> for tenantId {} ", RequestLocalContext.getActiveAccountId());
         var tenantId = RequestLocalContext.getActiveAccountId();
         AccountSettings entity = accountSettingsRepository.findAccountSettings(tenantId);
@@ -65,7 +74,7 @@ public class AccountSettingsService {
         accountSettingsRepository.save(entity);
     }
 
-    public void handleAppEvent(UninstalledEvent lifecycleEvent) {
+    private void handleAppEvent(UninstalledEvent lifecycleEvent) {
         String accountId = RequestLocalContext.getActiveAccountId();
         AccountSettings entity = accountSettingsRepository.findAccountSettings(accountId);
         if (entity != null) {
@@ -73,28 +82,31 @@ public class AccountSettingsService {
         }
     }
 
-    public void handleAppEvent(RegisteredEvent registeredEvent) {
+    private void handleAppEvent(RegisteredEvent registeredEvent) {
         var details = registeredEvent.getData();
         var tenantId = RequestLocalContext.getActiveAccountId();
-        var entity = appRegistrationRepository.findByAccountId(tenantId);
-
-        if (entity != null) {
+        var appId = Optional.ofNullable(RequestLocalContext.getFromLocalContext(APP_ID_CONTEXT)).map(Object::toString).orElse(null);
+        var existingRegistration = appRegistrationRepository.findRegistration(tenantId, appId);
+        if (existingRegistration.isPresent()) {
             LOGGER.debug("App already registered for tenantId {}", tenantId);
             return;
         }
 
-        entity = new AppRegistration();
-        entity.setAccountId(tenantId);
+        var appRegistration = new AppRegistration();
+        appRegistration.setAccountId(tenantId);
+        appRegistration.setAppId(appId);
         if (details.getClientCredentials() != null) {
-            entity.setClientCredentials(new ClientCredentials(details.getClientCredentials()));
+            appRegistration.setClientCredentials(new ClientCredentials(details.getClientCredentials()));
         }
 
-        appRegistrationRepository.save(entity);
+        appRegistrationRepository.save(appRegistration);
     }
 
-    public void handleAppEvent(UnregisteredEvent lifecycleEvent) {
+    private void handleAppEvent(UnregisteredEvent lifecycleEvent) {
         var tenantId = RequestLocalContext.getActiveAccountId();
-        appRegistrationRepository.deleteByAccountId(tenantId);
+        var appId = Optional.ofNullable(RequestLocalContext.getFromLocalContext(APP_ID_CONTEXT)).map(Object::toString).orElse(null);
+
+        appRegistrationRepository.deleteRegistration(tenantId, appId);
     }
 
 
@@ -166,6 +178,26 @@ public class AccountSettingsService {
             }
         }
         return values;
+    }
+
+    private void validateLifeCycleEvent() {
+        String tenantId = Optional.ofNullable(RequestLocalContext.getFromLocalContext(DEV_TENANT_ID_CONTEXT)).map(Object::toString).orElse(null);
+        String appId = Optional.ofNullable(RequestLocalContext.getFromLocalContext(APP_ID_CONTEXT)).map(Object::toString).orElse(null);
+        var existingAppRegistration = appRegistrationRepository.findFirst();
+        existingAppRegistration.ifPresent(registration -> {
+            // for apps already registered without those 2 fields set
+            if(StringUtils.isEmpty(registration.getAppId()) || StringUtils.isEmpty(registration.getAccountId())) {
+                registration.setAppId(appId);
+                registration.setAccountId(tenantId);
+                appRegistrationRepository.save(registration);
+            }
+        });
+
+        var appRegistration = appRegistrationRepository.findRegistration(tenantId, appId);
+        if (appRegistration.isEmpty()) {
+            LOGGER.warn("Could not find registration for tenantId {} and appId {}", tenantId, appId);
+            throw new NotFoundException(String.format("Could not find registration for tenantId %s and appId %s", tenantId, appId));
+        }
     }
 
     public List<ConfigurationValue> getConfigurationsForExternalConsumption(String accountId) throws ValidationException {

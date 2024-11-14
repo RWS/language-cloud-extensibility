@@ -34,7 +34,7 @@ namespace Rws.LC.AppBlueprint.DAL
         /// <returns></returns>
         public async Task SaveRegistrationInfo(AppRegistrationEntity entity)
         {
-            await _appRegistration.InsertOneAsync(entity).ConfigureAwait(false);
+            await _appRegistration.ReplaceOneAsync(FilterDefinition<AppRegistrationEntity>.Empty, entity, new ReplaceOptions { IsUpsert = true }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -44,6 +44,21 @@ namespace Rws.LC.AppBlueprint.DAL
         public async Task<AppRegistrationEntity> GetRegistrationInfo()
         {
             return await _appRegistration.Find(FilterDefinition<AppRegistrationEntity>.Empty).SingleOrDefaultAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieves the app registration entity.
+        /// </summary>
+        /// <param name="tenantId">The tenant id.</param>
+        /// <param name="appId">The app id.</param>
+        /// <returns>The app registration entity</returns>
+        public async Task<AppRegistrationEntity> GetRegistrationInfo(string tenantId, string appId)
+        {
+            var tenantIdFilter = Builders<AppRegistrationEntity>.Filter.Eq(x => x.TenantId, tenantId);
+            var appIdFilter = Builders<AppRegistrationEntity>.Filter.Eq(x => x.AppId, appId);
+            var finalFilter = Builders<AppRegistrationEntity>.Filter.And(tenantIdFilter, appIdFilter);
+
+            return await _appRegistration.Find(finalFilter).SingleOrDefaultAsync().ConfigureAwait(false);
         }
 
         /// <summary>

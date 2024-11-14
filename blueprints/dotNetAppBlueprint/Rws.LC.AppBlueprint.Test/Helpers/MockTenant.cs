@@ -6,11 +6,11 @@ namespace Rws.LC.AppBlueprint.Test.Helpers
 {
     public class MockTenant
     {
-        private readonly string _fakeAccountId;
+        public string FakeAccountId { get; private set; }
 
         public MockTenant()
         {
-            _fakeAccountId = Guid.NewGuid().ToString();
+            FakeAccountId = Guid.NewGuid().ToString();
         }
 
         public ClaimsPrincipal GetDefaultPrincipal()
@@ -19,7 +19,7 @@ namespace Rws.LC.AppBlueprint.Test.Helpers
 
             var defaultClaims = new[]
             {
-                new Claim("aid", _fakeAccountId)
+                new Claim("aid", FakeAccountId)
             };
 
             _claims.AddRange(defaultClaims);
