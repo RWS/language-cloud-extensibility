@@ -3,6 +3,7 @@ using Rws.LC.AppBlueprint.Interfaces;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Rws.LC.AppBlueprint.Services
@@ -20,7 +21,7 @@ namespace Rws.LC.AppBlueprint.Services
             // Reading from the descriptor.json file, the descriptor for this app. 
             // Customize it to represent your app behavior.
             string descriptorText = File.ReadAllText("descriptor.json");
-            _appDescriptor = JsonNode.Parse(descriptorText);
+            _appDescriptor = JsonNode.Parse(descriptorText, documentOptions: new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip });
         }
 
         /// <summary>
