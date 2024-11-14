@@ -19,6 +19,7 @@ using Xunit;
 
 namespace Rws.LC.AppBlueprint.Test.StandardController
 {
+    [TestCaseOrderer("Rws.LC.AppBlueprint.Test.Helpers.PriorityOrderer", "Rws.LC.AppBlueprint.Test")]
     public class StandardControllerTests
     {
         readonly IConfiguration _configuration;
@@ -26,7 +27,7 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
         readonly IAccountService _accountService;
         readonly IHealthReporter _healthReporter;
 
-        readonly MockTenant _mockTenant;
+        readonly static MockTenant _mockTenant = new MockTenant();
 
         public StandardControllerTests()
         {
@@ -46,12 +47,28 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
             _descriptorService = serviceProvider.GetService<IDescriptorService>();
             _accountService = serviceProvider.GetService<IAccountService>();
             _healthReporter = serviceProvider.GetService<IHealthReporter>();
+        }
 
-            _mockTenant = new MockTenant();
+        [Fact, TestPriority(0)]
+        public async Task AppLifecycleUnregisterForCleanup()
+        {
+            using (var stream = new MemoryStream())
+            {
+                var standardController = BuildStandardController(BuildRequestContext("UnregisteredEventRequest.json", stream));
+
+                try
+                {
+                    await standardController.AppLifecycle().ConfigureAwait(false);
+                }
+                catch
+                {
+                    // ignore any errors
+                }
+            }
         }
 
 
-        [Fact]
+        [Fact, TestPriority(1)]
         public void GetDescriptor()
         {
             var standardController = BuildStandardController(new DefaultHttpContext());
@@ -73,7 +90,7 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
             Assert.Single(descriptor["configurations"].AsArray());
         }
 
-        [Fact]
+        [Fact, TestPriority(2)]
         public void HealthCheck()
         {
             var standardController = BuildStandardController(new DefaultHttpContext());
@@ -83,7 +100,7 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
             Assert.True(response is OkResult);
         }
 
-        [Fact]
+        [Fact, TestPriority(3)]
         public void GetDocumentation()
         {
             var standardController = BuildStandardController(new DefaultHttpContext());
@@ -94,7 +111,7 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
             Assert.Equal(_configuration["documentationUrl"], result.Url);
         }
 
-        [Fact]
+        [Fact, TestPriority(4)]
         public async Task AppLifecycleRegister()
         {
             using (var stream = new MemoryStream())
@@ -107,20 +124,7 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
             }
         }
 
-        [Fact]
-        public async Task AppLifecycleUnregister()
-        {
-            using (var stream = new MemoryStream())
-            {
-                var standardController = BuildStandardController(BuildRequestContext("UnregisteredEventRequest.json", stream));
-
-                var response = await standardController.AppLifecycle().ConfigureAwait(false);
-
-                Assert.True(response is OkResult);
-            }
-        }
-
-        [Fact]
+        [Fact, TestPriority(5)]
         public async Task AppLifecycleInstall()
         {
             using (var stream = new MemoryStream())
@@ -133,20 +137,7 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
             }
         }
 
-        [Fact]
-        public async Task AppLifecycleUninstall()
-        {
-            using (var stream = new MemoryStream())
-            {
-                var standardController = BuildStandardController(BuildRequestContext("UninstalledEventRequest.json", stream));
-
-                var response = await standardController.AppLifecycle().ConfigureAwait(false);
-
-                Assert.True(response is OkResult);
-            }
-        }
-
-        [Fact]
+        [Fact, TestPriority(6)]
         public async Task SetConfigurationSettings()
         {
             // first install the app
@@ -174,7 +165,37 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
             }
         }
 
-        [Fact]
+        [Fact, TestPriority(7)]
+        public async Task ValidateConfigurationSettings()
+        {
+            // first install the app
+            using (var stream = new MemoryStream())
+            {
+                var standardController = BuildStandardController(BuildRequestContext("InstalledEventRequest.json", stream));
+                await standardController.AppLifecycle().ConfigureAwait(false);
+            }
+            // then set the configuration settings on the account install entity
+            using (var stream = new MemoryStream())
+            {
+                var httpContext = new DefaultHttpContext();
+                httpContext.User = _mockTenant.GetDefaultPrincipal();
+                var standardController = BuildStandardController(httpContext);
+
+                var configSettingsRequest = JsonSerializer.Deserialize<List<ConfigurationValueModel>>(File.ReadAllText("TestFiles\\ConfigurationRequest.json"), JsonSettings.Default());
+
+                await standardController.SetConfigurationSettings(configSettingsRequest).ConfigureAwait(false);
+            }
+            // prepare context user for the config validation request
+            var httpContext2 = new DefaultHttpContext();
+            httpContext2.User = _mockTenant.GetDefaultPrincipal();
+            var testedStandardController = BuildStandardController(httpContext2);
+
+            var response = await testedStandardController.ValidateConfiguration().ConfigureAwait(false);
+
+            Assert.True(response is OkResult);
+        }
+
+        [Fact, TestPriority(8)]
         public async Task GetConfigurationSettings()
         {
             // first install the app
@@ -208,34 +229,30 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
             Assert.Equal("sampleConfigValue", configurationSettings.Items.First().Value.ToString());
         }
 
-        [Fact]
-        public async Task ValidateConfigurationSettings()
+        [Fact, TestPriority(9)]
+        public async Task AppLifecycleUninstall()
         {
-            // first install the app
             using (var stream = new MemoryStream())
             {
-                var standardController = BuildStandardController(BuildRequestContext("InstalledEventRequest.json", stream));
-                await standardController.AppLifecycle().ConfigureAwait(false);
+                var standardController = BuildStandardController(BuildRequestContext("UninstalledEventRequest.json", stream));
+
+                var response = await standardController.AppLifecycle().ConfigureAwait(false);
+
+                Assert.True(response is OkResult);
             }
-            // then set the configuration settings on the account install entity
+        }
+
+        [Fact, TestPriority(10)]
+        public async Task AppLifecycleUnregister()
+        {
             using (var stream = new MemoryStream())
             {
-                var httpContext = new DefaultHttpContext();
-                httpContext.User = _mockTenant.GetDefaultPrincipal();
-                var standardController = BuildStandardController(httpContext);
+                var standardController = BuildStandardController(BuildRequestContext("UnregisteredEventRequest.json", stream));
 
-                var configSettingsRequest = JsonSerializer.Deserialize<List<ConfigurationValueModel>>(File.ReadAllText("TestFiles\\ConfigurationRequest.json"), JsonSettings.Default());
+                var response = await standardController.AppLifecycle().ConfigureAwait(false);
 
-                await standardController.SetConfigurationSettings(configSettingsRequest).ConfigureAwait(false);
+                Assert.True(response is OkResult);
             }
-            // prepare context user for the config validation request
-            var httpContext2 = new DefaultHttpContext();
-            httpContext2.User = _mockTenant.GetDefaultPrincipal();
-            var testedStandardController = BuildStandardController(httpContext2);
-
-            var response = await testedStandardController.ValidateConfiguration().ConfigureAwait(false);
-
-            Assert.True(response is OkResult);
         }
 
         private Controllers.StandardController BuildStandardController(HttpContext httpContext)
@@ -265,6 +282,9 @@ namespace Rws.LC.AppBlueprint.Test.StandardController
             httpContext.Request.Body = stream;
             httpContext.Request.Body.Position = 0;
             httpContext.Request.ContentLength = stream.Length;
+
+            httpContext.Request.Headers.TryAdd(Constants.AppIdHeader, "AppId");
+            httpContext.Request.Headers.TryAdd(Constants.DevTenantIdHeader, _mockTenant.FakeAccountId);
 
             return httpContext;
         }

@@ -19,5 +19,6 @@
         public const string InvalidKey = "invalidKey";
         public const string NullValue = "nullValue";
         public const string AlreadyRegistered = "alreadyRegistered";
+        public const string RegistrationNotFound = "registrationNotFound";
     }
 }

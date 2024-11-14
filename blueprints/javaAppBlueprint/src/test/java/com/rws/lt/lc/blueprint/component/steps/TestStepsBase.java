@@ -28,8 +28,8 @@ public abstract class TestStepsBase {
         return "http://localhost:" + this.port;
     }
 
-    public <T, K> ResponseEntity<K> exchange(String url, T body, HttpMethod method, Class<K> responseType) {
-        ResponseEntity<K> response = getRestTemplate().exchange(getBaseUrl() + url, method, new HttpEntity<>(body), responseType);
+    public <T, K> ResponseEntity<K> exchange(String url, T body, HttpHeaders headers, HttpMethod method, Class<K> responseType) {
+        ResponseEntity<K> response = getRestTemplate().exchange(getBaseUrl() + url, method, new HttpEntity<>(body, headers), responseType);
         ScenarioStorage.setLastResponse(response);
         return response;
     }

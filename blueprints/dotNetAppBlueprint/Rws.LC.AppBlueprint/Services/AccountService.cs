@@ -4,6 +4,7 @@ using Rws.LC.AppBlueprint.Exceptions;
 using Rws.LC.AppBlueprint.Interfaces;
 using Rws.LC.AppBlueprint.Models;
 using Rws.LC.AppBlueprint.Models.Extensions;
+using Sdl.AppBlueprint.RestService.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -33,7 +34,7 @@ namespace Rws.LC.AppBlueprint.Services
         private const string SecretMask = "*****";
 
         /// <inheritdoc/>
-        public async Task SaveRegistrationInfo(RegisteredEvent registeredEvent, CancellationToken cancellationToken)
+        public async Task SaveRegistrationInfo(RegisteredEvent registeredEvent, string tenantId, string appId, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(registeredEvent.ClientCredentials?.ClientId))
             {
@@ -47,6 +48,8 @@ namespace Rws.LC.AppBlueprint.Services
 
             AppRegistrationEntity appRegistrationEntity = new AppRegistrationEntity()
             {
+                TenantId = tenantId,
+                AppId = appId,
                 ClientCredentials = registeredEvent.ClientCredentials.ToEntity()
             };
 
@@ -98,6 +101,25 @@ namespace Rws.LC.AppBlueprint.Services
         public async Task RemoveAccounts(CancellationToken cancellationToken)
         {
             await _repository.RemoveAccounts().ConfigureAwait(false);
+        }
+
+
+        public async Task ValidateLifecycleEvent(string tenantId, string appId)
+        {
+            var existingAppRegistration = await _appRegistrationRepository.GetRegistrationInfo().ConfigureAwait(false);
+            if (existingAppRegistration != null && (string.IsNullOrEmpty(existingAppRegistration.TenantId) || string.IsNullOrEmpty(existingAppRegistration.AppId)))
+            {
+                existingAppRegistration.AppId = appId;
+                existingAppRegistration.TenantId = tenantId;
+                await _appRegistrationRepository.SaveRegistrationInfo(existingAppRegistration).ConfigureAwait(false);
+            }
+
+            var appRegistration = await _appRegistrationRepository.GetRegistrationInfo(tenantId, appId).ConfigureAwait(false);
+
+            if (appRegistration == null)
+            {
+                throw new RegistrationNotFoundException(tenantId, appId);
+            }
         }
 
         /// <inheritdoc/>

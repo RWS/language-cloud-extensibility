@@ -4,6 +4,7 @@ import com.rws.lt.lc.blueprint.domain.AccountSettings;
 import com.rws.lt.lc.blueprint.domain.AppRegistration;
 import com.rws.lt.lc.blueprint.domain.ClientCredentials;
 import com.rws.lt.lc.blueprint.exception.NotAuthorizedException;
+import com.rws.lt.lc.blueprint.exception.NotFoundException;
 import com.rws.lt.lc.blueprint.exception.ValidationException;
 import com.rws.lt.lc.blueprint.persistence.AccountSettingsRepository;
 import com.rws.lt.lc.blueprint.persistence.AppRegistrationRepository;
@@ -22,17 +23,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import static com.rws.lt.lc.blueprint.metadata.AppMetadataConstants.APP_ID_CONTEXT;
+import static com.rws.lt.lc.blueprint.metadata.AppMetadataConstants.DEV_TENANT_ID_CONTEXT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.collection.IsMapWithSize.aMapWithSize;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 
@@ -41,6 +42,7 @@ public class AccountSettingsServiceTest {
 
     private static final String CREDS_ID = new ObjectId().toString();
     private static final String ACCOUNT_ID = "myAccount";
+    private static final String APP_ID = "lcAppId";
 
     @InjectMocks
     private AccountSettingsService accountSettingsService;
@@ -170,11 +172,15 @@ public class AccountSettingsServiceTest {
         var installedEvent = new InstalledEvent();
         installedEvent.setTimestamp(Long.toString(System.currentTimeMillis()));
         installedEvent.setData(new InstalledEventDetails("eu"));
+        var appRegistration = new AppRegistration();
 
         RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
+        RequestLocalContext.putInLocalContext(DEV_TENANT_ID_CONTEXT, ACCOUNT_ID);
+        RequestLocalContext.putInLocalContext(APP_ID_CONTEXT, APP_ID);
 
+        when(appRegistrationRepository.findRegistration(eq(ACCOUNT_ID), eq(APP_ID))).thenReturn(Optional.of(appRegistration));
         when(settingsRepository.findAccountSettings(eq(ACCOUNT_ID))).thenReturn(null);
-        accountSettingsService.handleAppEvent((AppLifecycleEvent) installedEvent);
+        accountSettingsService.handleAppEvent(installedEvent);
 
         ArgumentCaptor<AccountSettings> settingsCaptor = ArgumentCaptor.forClass(AccountSettings.class);
         verify(settingsRepository, times(1)).save(settingsCaptor.capture());
@@ -184,13 +190,42 @@ public class AccountSettingsServiceTest {
     }
 
     @Test
-    public void testActivatedAppEventAlreadyActivated() {
+    public void testInstalledAppEventWithRegistrationUpdate() {
         var installedEvent = new InstalledEvent();
         installedEvent.setTimestamp(Long.toString(System.currentTimeMillis()));
         installedEvent.setData(new InstalledEventDetails("eu"));
+        var appRegistration = new AppRegistration();
+
+        RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
+        RequestLocalContext.putInLocalContext(DEV_TENANT_ID_CONTEXT, ACCOUNT_ID);
+        RequestLocalContext.putInLocalContext(APP_ID_CONTEXT, APP_ID);
 
         when(settingsRepository.findAccountSettings(eq(ACCOUNT_ID))).thenReturn(null);
-        accountSettingsService.handleAppEvent((AppLifecycleEvent) installedEvent);
+        when(appRegistrationRepository.findFirst()).thenReturn(Optional.of(appRegistration));
+        when(appRegistrationRepository.findRegistration(eq(ACCOUNT_ID), eq(APP_ID))).thenReturn(Optional.of(appRegistration));
+        accountSettingsService.handleAppEvent(installedEvent);
+
+        ArgumentCaptor<AccountSettings> settingsCaptor = ArgumentCaptor.forClass(AccountSettings.class);
+        verify(settingsRepository, times(1)).save(settingsCaptor.capture());
+        verify(appRegistrationRepository).save(any());
+        AccountSettings savedSettings = settingsCaptor.getValue();
+
+        assertThat(savedSettings.getAccountId(), is(ACCOUNT_ID));
+    }
+
+    @Test
+    public void testInstallAppEventAlreadyInstalled() {
+        var installedEvent = new InstalledEvent();
+        installedEvent.setTimestamp(Long.toString(System.currentTimeMillis()));
+        installedEvent.setData(new InstalledEventDetails("eu"));
+        var appRegistration = new AppRegistration();
+
+        RequestLocalContext.putInLocalContext(DEV_TENANT_ID_CONTEXT, ACCOUNT_ID);
+        RequestLocalContext.putInLocalContext(APP_ID_CONTEXT, APP_ID);
+
+        when(appRegistrationRepository.findRegistration(eq(ACCOUNT_ID), eq(APP_ID))).thenReturn(Optional.of(appRegistration));
+        when(settingsRepository.findAccountSettings(eq(ACCOUNT_ID))).thenReturn(null);
+        accountSettingsService.handleAppEvent(installedEvent);
 
         ArgumentCaptor<AccountSettings> settingsCaptor = ArgumentCaptor.forClass(AccountSettings.class);
         verify(settingsRepository, times(1)).save(settingsCaptor.capture());
@@ -201,12 +236,21 @@ public class AccountSettingsServiceTest {
 
     @Test
     public void testUninstalledAccountEvent() {
+        RequestLocalContext.putInLocalContext(DEV_TENANT_ID_CONTEXT, ACCOUNT_ID);
+        RequestLocalContext.putInLocalContext(APP_ID_CONTEXT, APP_ID);
+
+        var appRegistration = new AppRegistration();
+        appRegistration.setAccountId(ACCOUNT_ID);
+        appRegistration.setAccountId(APP_ID);
+
         var uninstalledEvent = new UninstalledEvent();
         uninstalledEvent.setTimestamp(Long.toString(System.currentTimeMillis()));
 
         AccountSettings settings = new AccountSettings();
         settings.setAccountId(ACCOUNT_ID);
 
+        when(appRegistrationRepository.findFirst()).thenReturn(Optional.of(appRegistration));
+        when(appRegistrationRepository.findRegistration(eq(ACCOUNT_ID), eq(APP_ID))).thenReturn(Optional.of(appRegistration));
         when(settingsRepository.findAccountSettings(eq(ACCOUNT_ID))).thenReturn(settings);
         accountSettingsService.handleAppEvent(uninstalledEvent);
 
@@ -220,10 +264,18 @@ public class AccountSettingsServiceTest {
     @Test
     public void testUninstalledAccountEventAlreadyUninstalled() {
         RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
+        RequestLocalContext.putInLocalContext(DEV_TENANT_ID_CONTEXT, ACCOUNT_ID);
+        RequestLocalContext.putInLocalContext(APP_ID_CONTEXT, APP_ID);
+
+        var appRegistration = new AppRegistration();
+        appRegistration.setAccountId(ACCOUNT_ID);
+        appRegistration.setAccountId(APP_ID);
 
         UninstalledEvent event = new UninstalledEvent();
         event.setTimestamp(Long.toString(System.currentTimeMillis()));
 
+        when(appRegistrationRepository.findFirst()).thenReturn(Optional.of(appRegistration));
+        when(appRegistrationRepository.findRegistration(eq(ACCOUNT_ID), eq(APP_ID))).thenReturn(Optional.of(appRegistration));
         when(settingsRepository.findAccountSettings(eq(ACCOUNT_ID))).thenReturn(null);
         accountSettingsService.handleAppEvent(event);
 
@@ -240,7 +292,9 @@ public class AccountSettingsServiceTest {
         registeredEvent.setData(details);
 
         RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
-        when(appRegistrationRepository.findByAccountId(eq(ACCOUNT_ID))).thenReturn(null);
+        RequestLocalContext.putInLocalContext(DEV_TENANT_ID_CONTEXT, ACCOUNT_ID);
+        RequestLocalContext.putInLocalContext(APP_ID_CONTEXT, APP_ID);
+        when(appRegistrationRepository.findRegistration(eq(ACCOUNT_ID), eq(APP_ID))).thenReturn(Optional.empty());
         accountSettingsService.handleAppEvent(registeredEvent);
 
         ArgumentCaptor<AppRegistration> appRegistrationArgumentCaptor = ArgumentCaptor.forClass(AppRegistration.class);
@@ -259,7 +313,9 @@ public class AccountSettingsServiceTest {
         var registeredEvent = new RegisteredEvent();
         var registeredApp = new AppRegistration();
         RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
-        when(appRegistrationRepository.findByAccountId(ACCOUNT_ID)).thenReturn(registeredApp);
+        RequestLocalContext.putInLocalContext(DEV_TENANT_ID_CONTEXT, ACCOUNT_ID);
+        RequestLocalContext.putInLocalContext(APP_ID_CONTEXT, APP_ID);
+        when(appRegistrationRepository.findRegistration(ACCOUNT_ID, APP_ID)).thenReturn(Optional.of(registeredApp));
 
         accountSettingsService.handleAppEvent(registeredEvent);
 
@@ -268,13 +324,34 @@ public class AccountSettingsServiceTest {
 
     @Test
     public void testUnregisteredAppEvent() {
+        RequestLocalContext.putInLocalContext(DEV_TENANT_ID_CONTEXT, ACCOUNT_ID);
+        RequestLocalContext.putInLocalContext(APP_ID_CONTEXT, APP_ID);
+
+        var appRegistration = new AppRegistration();
+        appRegistration.setAccountId(ACCOUNT_ID);
+        appRegistration.setAccountId(APP_ID);
+
+        when(appRegistrationRepository.findFirst()).thenReturn(Optional.of(appRegistration));
+        when(appRegistrationRepository.findRegistration(eq(ACCOUNT_ID), eq(APP_ID))).thenReturn(Optional.of(appRegistration));
+
         var unregisteredEvent = new UnregisteredEvent();
         RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
 
         accountSettingsService.handleAppEvent(unregisteredEvent);
 
-        verify(appRegistrationRepository).deleteByAccountId(eq(ACCOUNT_ID));
+        verify(appRegistrationRepository).deleteRegistration(eq(ACCOUNT_ID), eq(APP_ID));
     }
 
+    @Test(expected = NotFoundException.class)
+    public void testUnregisteredDifferentApp() {
+        var unregisteredEvent = new UnregisteredEvent();
+        RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
+        RequestLocalContext.putInLocalContext(DEV_TENANT_ID_CONTEXT, ACCOUNT_ID);
+        RequestLocalContext.putInLocalContext(APP_ID_CONTEXT, APP_ID);
+        when(appRegistrationRepository.findRegistration(ACCOUNT_ID, APP_ID)).thenReturn(Optional.empty());
 
+        accountSettingsService.handleAppEvent(unregisteredEvent);
+
+        verify(appRegistrationRepository, never()).deleteRegistration(any(), any());
+    }
 }

@@ -19,7 +19,8 @@ import static org.mockito.Mockito.doAnswer;
 @Configuration
 public class MockComponentTestConfiguration {
 
-    private final String TEST_ACCOUNT_ID = "testAccount";
+    public static final String TEST_ACCOUNT_ID = "testAccountId";
+    public static final String TEST_APP_ID = "testAppId";
 
     @Bean
     @Primary

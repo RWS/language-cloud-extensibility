@@ -14,9 +14,11 @@ namespace Rws.LC.AppBlueprint.Interfaces
         /// Saves the registration information.
         /// </summary>
         /// <param name="registeredEvent">The registered event information.</param>
+        /// <param name="tenantId">The LC tenant id.</param>
+        /// <param name="appId">The app registration id from LC.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task SaveRegistrationInfo(RegisteredEvent registeredEvent, CancellationToken cancellationToken);
+        Task SaveRegistrationInfo(RegisteredEvent registeredEvent, string tenantId, string appId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the registration information.
@@ -45,6 +47,14 @@ namespace Rws.LC.AppBlueprint.Interfaces
         /// </summary>
         /// <param name="cancellationToken"></param>
         Task RemoveAccounts(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Validates the lifecycle event corresponds to the tenant and app id.
+        /// </summary>
+        /// <param name="tenantId">The tenant id.</param>
+        /// <param name="appId">The app id.</param>
+        /// <returns></returns>
+        Task ValidateLifecycleEvent(string tenantId, string appId);
 
         /// <summary>
         /// Saves or updates the configuration settings
