@@ -7,6 +7,7 @@ using System.Linq;
 
 namespace Rws.LC.MTSampleApp.DAL.Entities
 {
+    [BsonIgnoreExtraElements]
     public class AccountInfoEntity
     {
         [BsonId]
@@ -17,6 +18,11 @@ namespace Rws.LC.MTSampleApp.DAL.Entities
         /// The tenant id.
         /// </summary>
         public string TenantId { get; set; }
+
+        /// <summary>
+        /// The region of the tenant.
+        /// </summary>
+        public string Region { get; set; }
 
         /// <summary>
         /// The configuration values.

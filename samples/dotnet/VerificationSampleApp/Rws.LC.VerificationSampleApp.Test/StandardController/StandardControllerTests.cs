@@ -62,7 +62,7 @@ namespace Rws.LC.VerificationSampleApp.Test.StandardController
             Assert.Equal(_configuration["baseUrl"], descriptor["baseUrl"].ToString());
             Assert.Equal("1.0.0", descriptor["version"].ToString());
             Assert.Equal("1.4", descriptor["descriptorVersion"].ToString());
-            Assert.Equal(2, descriptor["extensions"].AsArray().Count);
+            Assert.Single(descriptor["extensions"].AsArray());
             Assert.Equal("/v1/health", descriptor["standardEndpoints"]["health"].ToString());
             Assert.Equal("/v1/documentation", descriptor["standardEndpoints"]["documentation"].ToString());
             Assert.Equal("/v1/app-lifecycle", descriptor["standardEndpoints"]["appLifecycle"].ToString());
@@ -70,7 +70,7 @@ namespace Rws.LC.VerificationSampleApp.Test.StandardController
             Assert.Equal("/v1/configuration/validation", descriptor["standardEndpoints"]["configurationValidation"].ToString());
             Assert.Equal("/v1/privacyPolicy", descriptor["standardEndpoints"]["privacyPolicy"].ToString());
             Assert.Equal("/v1/termsAndConditions", descriptor["standardEndpoints"]["termsAndConditions"].ToString());
-            Assert.Single(descriptor["configurations"].AsArray());
+            Assert.Empty(descriptor["configurations"].AsArray());
         }
 
         [Fact]

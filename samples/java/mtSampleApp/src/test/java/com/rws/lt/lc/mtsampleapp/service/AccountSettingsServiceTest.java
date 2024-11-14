@@ -164,6 +164,7 @@ public class AccountSettingsServiceTest {
     public void testInstalledAppEvent() {
         InstalledEvent event = new InstalledEvent();
         event.setTimestamp(Long.toString(System.currentTimeMillis()));
+        event.setData(new InstalledEventDetails("eu"));
 
         when(settingsRepository.findAccountSettings(eq(ACCOUNT_ID))).thenReturn(null);
         accountSettingsService.handleAppEvent((AppLifecycleEvent) event);
@@ -176,9 +177,10 @@ public class AccountSettingsServiceTest {
     }
 
     @Test
-    public void testInstalledAppEventAlreadyInstalle() {
+    public void testInstalledAppEventAlreadyInstalled() {
         InstalledEvent event = new InstalledEvent();
         event.setTimestamp(Long.toString(System.currentTimeMillis()));
+        event.setData(new InstalledEventDetails("eu"));
 
         when(settingsRepository.findAccountSettings(eq(ACCOUNT_ID))).thenReturn(new AccountSettings());
         accountSettingsService.handleAppEvent((AppLifecycleEvent) event);

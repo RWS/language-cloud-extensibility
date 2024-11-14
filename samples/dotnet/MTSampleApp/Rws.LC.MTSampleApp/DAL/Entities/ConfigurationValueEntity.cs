@@ -1,7 +1,9 @@
-﻿using System.Text.Json.Nodes;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System.Text.Json.Nodes;
 
 namespace Rws.LC.MTSampleApp.DAL.Entities
 {
+    [BsonIgnoreExtraElements]
     public class ConfigurationValueEntity
     {
         /// <summary>

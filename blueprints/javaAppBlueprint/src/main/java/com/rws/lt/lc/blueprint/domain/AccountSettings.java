@@ -18,6 +18,9 @@ public class AccountSettings extends PersistedDomain {
     @Field("accountId")
     private String accountId;
 
+    @Field("region")
+    private String region;
+
     @Field("configs")
     private Map<String, String> configurations = new HashMap<>();
 
