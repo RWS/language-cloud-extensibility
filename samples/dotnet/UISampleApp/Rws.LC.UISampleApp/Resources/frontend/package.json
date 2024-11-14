@@ -1,0 +1,21 @@
+{
+  "name": "trados-ui-extension-sample",
+  "version": "1.0.0",
+  "description": "Trados UI extension sample",
+  "main": "index.js",
+  "sideEffects": false,
+  "scripts": {
+    "build-dev": "webpack --progress --mode=development",
+    "build": "webpack --progress --mode=production"
+  },
+  "author": "RWS",
+  "license": "MIT",
+  "dependencies": {
+    "@trados/trados-ui-extensibility": "^0.1.4"
+  },
+  "devDependencies": {
+    "ts-loader": "9.5.1",
+    "webpack": "5.94.0",
+    "webpack-cli": "5.1.4"
+  }
+}
