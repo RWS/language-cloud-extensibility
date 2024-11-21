@@ -3,6 +3,11 @@ application:
 
 # TODO: replace with a real URL
 baseUrl: "replace-me"
+multiRegion:
+  enabled: false
+  regionalBaseUrls:
+    eu: "replace-me-eu"
+    ca: "replace-me-ca"
 
 server:
   port: 5000

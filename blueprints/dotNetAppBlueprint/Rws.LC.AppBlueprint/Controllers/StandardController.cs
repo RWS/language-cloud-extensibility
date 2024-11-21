@@ -88,6 +88,23 @@ namespace Rws.LC.AppBlueprint.Controllers
             // TODO: You might need to change the baseUrl in appsettings.json
             descriptor["baseUrl"] = _configuration["baseUrl"];
 
+            if (_configuration.GetValue<bool>("multiRegion:enabled"))
+            {
+                descriptor["regionalBaseUrls"] = new JsonObject();
+
+                string euBaseUrl = _configuration.GetValue<string>("multiRegion:regionalBaseUrls:eu");
+                string caBaseUrl = _configuration.GetValue<string>("multiRegion:regionalBaseUrls:ca");
+
+                if (!string.IsNullOrEmpty(euBaseUrl))
+                {
+                    descriptor["regionalBaseUrls"]["eu"] = euBaseUrl;
+                }
+                if (!string.IsNullOrEmpty(caBaseUrl))
+                {
+                    descriptor["regionalBaseUrls"]["ca"] = caBaseUrl;
+                }
+            }
+
             return Ok(descriptor);
         }
 
