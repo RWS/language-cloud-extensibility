@@ -16,6 +16,11 @@ namespace Rws.LC.AppBlueprint.DAL.Entities
         public string TenantId { get; set; }
 
         /// <summary>
+        /// The region of the tenant.
+        /// </summary>
+        public string Region { get; set; }
+
+        /// <summary>
         /// The configuration values.
         /// </summary>
         public List<ConfigurationValueEntity> ConfigurationValues { get; set; }

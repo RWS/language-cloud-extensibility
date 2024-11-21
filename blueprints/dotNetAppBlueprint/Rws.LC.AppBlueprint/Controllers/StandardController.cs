@@ -152,9 +152,9 @@ namespace Rws.LC.AppBlueprint.Controllers
                     break;
                 case AppLifecycleEventEnum.INSTALLED:
                     _logger.LogInformation("App Installed Event Received for tenant id {TenantId}.", tenantId);
-
                     await _accountService.ValidateLifecycleEvent(devTenantId, appId);
-                    await _accountService.SaveAccountInfo(tenantId, CancellationToken.None).ConfigureAwait(true);
+                    AppLifecycleEvent<InstalledEvent> installedEvent = JsonSerializer.Deserialize<AppLifecycleEvent<InstalledEvent>>(payload, JsonSettings.Default());
+                    await _accountService.SaveAccountInfo(tenantId, installedEvent.Data.Region, CancellationToken.None).ConfigureAwait(true);
                     break;
                 case AppLifecycleEventEnum.UNREGISTERED:
                     // This is the event notifying that the App has been unregistered/deleted from Language Cloud.

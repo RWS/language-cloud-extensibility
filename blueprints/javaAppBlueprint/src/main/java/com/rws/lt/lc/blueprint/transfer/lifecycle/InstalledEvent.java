@@ -16,4 +16,8 @@ public class InstalledEvent extends AppLifecycleEvent {
         super(INSTALLED);
     }
 
+    @Valid
+    @NotNull
+    private InstalledEventDetails data;
+
 }

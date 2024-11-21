@@ -70,6 +70,7 @@ public class AccountSettingsService {
 
         entity = new AccountSettings();
         entity.setAccountId(tenantId);
+        entity.setRegion(lifecycleEvent.getData().getRegion());
 
         accountSettingsRepository.save(entity);
     }
@@ -85,7 +86,7 @@ public class AccountSettingsService {
     private void handleAppEvent(RegisteredEvent registeredEvent) {
         var details = registeredEvent.getData();
         var tenantId = RequestLocalContext.getActiveAccountId();
-        var appId = Optional.ofNullable(RequestLocalContext.getFromLocalContext(APP_ID_CONTEXT)).map(Object::toString).orElse(null);
+        var appId = (String) RequestLocalContext.getFromLocalContext(APP_ID_CONTEXT);
         var existingRegistration = appRegistrationRepository.findRegistration(tenantId, appId);
         if (existingRegistration.isPresent()) {
             LOGGER.debug("App already registered for tenantId {}", tenantId);
@@ -104,7 +105,7 @@ public class AccountSettingsService {
 
     private void handleAppEvent(UnregisteredEvent lifecycleEvent) {
         var tenantId = RequestLocalContext.getActiveAccountId();
-        var appId = Optional.ofNullable(RequestLocalContext.getFromLocalContext(APP_ID_CONTEXT)).map(Object::toString).orElse(null);
+        var appId = (String) RequestLocalContext.getFromLocalContext(APP_ID_CONTEXT);
 
         appRegistrationRepository.deleteRegistration(tenantId, appId);
     }
@@ -181,12 +182,12 @@ public class AccountSettingsService {
     }
 
     private void validateLifeCycleEvent() {
-        String tenantId = Optional.ofNullable(RequestLocalContext.getFromLocalContext(DEV_TENANT_ID_CONTEXT)).map(Object::toString).orElse(null);
-        String appId = Optional.ofNullable(RequestLocalContext.getFromLocalContext(APP_ID_CONTEXT)).map(Object::toString).orElse(null);
+        String tenantId = (String) RequestLocalContext.getFromLocalContext(DEV_TENANT_ID_CONTEXT);
+        String appId = (String) RequestLocalContext.getFromLocalContext(APP_ID_CONTEXT);
         var existingAppRegistration = appRegistrationRepository.findFirst();
         existingAppRegistration.ifPresent(registration -> {
             // for apps already registered without those 2 fields set
-            if(StringUtils.isEmpty(registration.getAppId()) || StringUtils.isEmpty(registration.getAccountId())) {
+            if (StringUtils.isEmpty(registration.getAppId()) || StringUtils.isEmpty(registration.getAccountId())) {
                 registration.setAppId(appId);
                 registration.setAccountId(tenantId);
                 appRegistrationRepository.save(registration);

@@ -1,4 +1,4 @@
-﻿namespace Rws.LC.MTSampleApp.Models
+﻿namespace Rws.LC.AppBlueprint.Models
 {
     public class InstalledEvent
     {

@@ -171,6 +171,7 @@ public class AccountSettingsServiceTest {
     public void testInstalledAppEvent() {
         var installedEvent = new InstalledEvent();
         installedEvent.setTimestamp(Long.toString(System.currentTimeMillis()));
+        installedEvent.setData(new InstalledEventDetails("eu"));
         var appRegistration = new AppRegistration();
 
         RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
@@ -192,6 +193,7 @@ public class AccountSettingsServiceTest {
     public void testInstalledAppEventWithRegistrationUpdate() {
         var installedEvent = new InstalledEvent();
         installedEvent.setTimestamp(Long.toString(System.currentTimeMillis()));
+        installedEvent.setData(new InstalledEventDetails("eu"));
         var appRegistration = new AppRegistration();
 
         RequestLocalContext.putInLocalContext(LocalContextKeys.ACTIVE_ACCOUNT_ID, ACCOUNT_ID);
@@ -215,6 +217,7 @@ public class AccountSettingsServiceTest {
     public void testInstallAppEventAlreadyInstalled() {
         var installedEvent = new InstalledEvent();
         installedEvent.setTimestamp(Long.toString(System.currentTimeMillis()));
+        installedEvent.setData(new InstalledEventDetails("eu"));
         var appRegistration = new AppRegistration();
 
         RequestLocalContext.putInLocalContext(DEV_TENANT_ID_CONTEXT, ACCOUNT_ID);

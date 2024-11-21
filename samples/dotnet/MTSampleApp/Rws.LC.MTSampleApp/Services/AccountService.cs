@@ -66,7 +66,7 @@ namespace Rws.LC.MTSampleApp.Services
         }
 
         /// <inheritdoc/>
-        public async Task SaveAccountInfo(string tenantId, CancellationToken cancellationToken)
+        public async Task SaveAccountInfo(string tenantId, string region, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(tenantId))
             {
@@ -75,7 +75,8 @@ namespace Rws.LC.MTSampleApp.Services
 
             AccountInfoEntity accountInfoEntity = new AccountInfoEntity()
             {
-                TenantId = tenantId
+                TenantId = tenantId,
+                Region = region
             };
 
             var accountInfo = await _repository.GetAccountInfoByTenantId(tenantId).ConfigureAwait(false);

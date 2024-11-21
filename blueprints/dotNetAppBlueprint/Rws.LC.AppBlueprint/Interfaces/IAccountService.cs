@@ -31,13 +31,14 @@ namespace Rws.LC.AppBlueprint.Interfaces
         /// Saves the account information.
         /// </summary>
         /// <param name="tenantId">The tenant identifier.</param>
+        /// <param name="region">The tenant region.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        Task SaveAccountInfo(string tenantId, CancellationToken cancellationToken);
+        Task SaveAccountInfo(string tenantId, string region, CancellationToken cancellationToken);
 
         /// <summary>
         /// Removes the account information.
         /// </summary>
-        /// <param name="tenantId">The tenant id.</param>
+        /// <param name="tenantId">The tenant identifier.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         Task RemoveAccountInfo(string tenantId, CancellationToken cancellationToken);
 
