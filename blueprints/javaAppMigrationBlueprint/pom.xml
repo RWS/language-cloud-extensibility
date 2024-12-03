@@ -63,6 +63,7 @@
         <http.client.version>4.5.13</http.client.version>
         <auth0.jwt.version>3.4.0</auth0.jwt.version>
         <mockito-core.version>2.28.2</mockito-core.version>
+        <extensibilty.security.version>1.1.4</extensibilty.security.version>
 
         <!-- set to true if you want to run only component tests without unit tests -->
         <skipUTs>false</skipUTs>
@@ -200,6 +201,12 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>${http.client.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.rws.lt.lc.extensibility.security</groupId>
+            <artifactId>language-cloud-extensibility-security</artifactId>
+            <version>${extensibilty.security.version}</version>
         </dependency>
 
     </dependencies>

@@ -12,7 +12,7 @@ import com.rws.lt.lc.blueprint.transfer.ConfigurationValue;
 import com.rws.lt.lc.blueprint.transfer.ErrorDetail;
 import com.rws.lt.lc.blueprint.transfer.ErrorResponse;
 import com.rws.lt.lc.blueprint.transfer.lifecycle.*;
-import com.rws.lt.lc.blueprint.util.RequestLocalContext;
+import com.rws.lt.lc.extensibility.security.util.RequestLocalContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
