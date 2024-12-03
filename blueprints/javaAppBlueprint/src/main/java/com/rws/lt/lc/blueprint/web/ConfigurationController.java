@@ -5,7 +5,7 @@ import com.rws.lt.lc.blueprint.exception.ValidationException;
 import com.rws.lt.lc.blueprint.service.AccountSettingsService;
 import com.rws.lt.lc.blueprint.transfer.ConfigurationSettingsResult;
 import com.rws.lt.lc.blueprint.transfer.ConfigurationValue;
-import com.rws.lt.lc.blueprint.util.RequestLocalContext;
+import com.rws.lt.lc.extensibility.security.util.RequestLocalContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

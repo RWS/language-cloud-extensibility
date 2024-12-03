@@ -2,8 +2,8 @@ package com.rws.lt.lc.blueprint.logging;
 
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.rws.lt.lc.blueprint.util.LocalContextKeys;
-import com.rws.lt.lc.blueprint.util.RequestLocalContext;
+import com.rws.lt.lc.extensibility.security.util.LocalContextKeys;
+import com.rws.lt.lc.extensibility.security.util.RequestLocalContext;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

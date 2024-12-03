@@ -2,7 +2,7 @@ package com.rws.lt.lc.blueprint.web;
 
 import com.rws.lt.lc.blueprint.transfer.TranslateRequest;
 import com.rws.lt.lc.blueprint.transfer.TranslateResponse;
-import com.rws.lt.lc.blueprint.util.RequestLocalContext;
+import com.rws.lt.lc.extensibility.security.util.RequestLocalContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;

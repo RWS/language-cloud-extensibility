@@ -53,8 +53,9 @@ documentation.url: "replace-me"
 
 integration:
   public-api:
-    basePublicApiV1Url: https://lc-api.sdl.com/public-api/v1
-    retrievePublicKeyByIdUrl: ${integration.public-api.basePublicApiV1Url}/.well-known/jwks.json/{kid}
+    basePublicApiV1Url: https://api.cloud.trados.com/public-api/v1
+    retrievePublicKeysUrl: ${integration.public-api.basePublicApiV1Url}/.well-known/jwks.json
 
 authentication:
   lc-issuer: https://languagecloud.rws.com/
+  audience: ${baseUrl}    # supports multiple values separated by comma
