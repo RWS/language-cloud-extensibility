@@ -1,14 +1,13 @@
 package com.rws.lt.lc.mtsampleapp.service;
 
+import com.rws.lt.lc.extensibility.security.util.LocalContextKeys;
+import com.rws.lt.lc.extensibility.security.util.RequestLocalContext;
 import com.rws.lt.lc.mtsampleapp.domain.AccountSettings;
-import com.rws.lt.lc.mtsampleapp.domain.ClientCredentials;
 import com.rws.lt.lc.mtsampleapp.exception.NotAuthorizedException;
 import com.rws.lt.lc.mtsampleapp.exception.ValidationException;
 import com.rws.lt.lc.mtsampleapp.persistence.AccountSettingsRepository;
 import com.rws.lt.lc.mtsampleapp.transfer.ConfigurationValue;
 import com.rws.lt.lc.mtsampleapp.transfer.lifecycle.*;
-import com.rws.lt.lc.mtsampleapp.util.LocalContextKeys;
-import com.rws.lt.lc.mtsampleapp.util.RequestLocalContext;
 import org.bson.types.ObjectId;
 import org.hamcrest.core.IsNull;
 import org.junit.Before;

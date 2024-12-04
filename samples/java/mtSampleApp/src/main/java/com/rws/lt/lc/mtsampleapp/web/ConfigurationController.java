@@ -1,12 +1,12 @@
 package com.rws.lt.lc.mtsampleapp.web;
 
+import com.rws.lt.lc.extensibility.security.util.RequestLocalContext;
 import com.rws.lt.lc.mtsampleapp.exception.InvalidConfigurationException;
 import com.rws.lt.lc.mtsampleapp.exception.NotAuthorizedException;
 import com.rws.lt.lc.mtsampleapp.exception.ValidationException;
 import com.rws.lt.lc.mtsampleapp.service.AccountSettingsService;
 import com.rws.lt.lc.mtsampleapp.transfer.ConfigurationSettingsResult;
 import com.rws.lt.lc.mtsampleapp.transfer.ConfigurationValue;
-import com.rws.lt.lc.mtsampleapp.util.RequestLocalContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

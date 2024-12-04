@@ -1,6 +1,6 @@
 package com.rws.lt.lc.mtsampleapp.metadata;
 
-import com.rws.lt.lc.mtsampleapp.util.RequestLocalContext;
+import com.rws.lt.lc.extensibility.security.util.RequestLocalContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;

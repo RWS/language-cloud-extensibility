@@ -1,9 +1,9 @@
 package com.rws.lt.lc.mtsampleapp.component;
 
+import com.rws.lt.lc.extensibility.security.JWSExtractor;
+import com.rws.lt.lc.extensibility.security.util.LocalContextKeys;
+import com.rws.lt.lc.extensibility.security.util.RequestLocalContext;
 import com.rws.lt.lc.mtsampleapp.exception.NotAuthorizedException;
-import com.rws.lt.lc.mtsampleapp.security.JWSExtractor;
-import com.rws.lt.lc.mtsampleapp.util.LocalContextKeys;
-import com.rws.lt.lc.mtsampleapp.util.RequestLocalContext;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,11 +1,11 @@
 package com.rws.lt.lc.mtsampleapp.web;
 
+import com.rws.lt.lc.extensibility.security.util.RequestLocalContext;
 import com.rws.lt.lc.mtsampleapp.exception.ValidationException;
 import com.rws.lt.lc.mtsampleapp.service.TranslationEnginesService;
 import com.rws.lt.lc.mtsampleapp.transfer.TranslationEngine;
 import com.rws.lt.lc.mtsampleapp.transfer.TranslationEnginesRequest;
 import com.rws.lt.lc.mtsampleapp.transfer.TranslationEnginesResponse;
-import com.rws.lt.lc.mtsampleapp.util.RequestLocalContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

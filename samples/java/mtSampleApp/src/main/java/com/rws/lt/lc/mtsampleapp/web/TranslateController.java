@@ -1,9 +1,9 @@
 package com.rws.lt.lc.mtsampleapp.web;
 
+import com.rws.lt.lc.extensibility.security.util.RequestLocalContext;
 import com.rws.lt.lc.mtsampleapp.service.TranslateService;
 import com.rws.lt.lc.mtsampleapp.transfer.TranslateRequest;
 import com.rws.lt.lc.mtsampleapp.transfer.TranslateResponse;
-import com.rws.lt.lc.mtsampleapp.util.RequestLocalContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

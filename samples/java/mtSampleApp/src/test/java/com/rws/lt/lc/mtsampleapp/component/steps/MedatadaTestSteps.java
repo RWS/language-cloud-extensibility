@@ -1,8 +1,7 @@
 package com.rws.lt.lc.mtsampleapp.component.steps;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.rws.lt.lc.mtsampleapp.component.ScenarioStorage;
-import com.rws.lt.lc.mtsampleapp.transfer.Descriptor;
-import com.rws.lt.lc.mtsampleapp.transfer.DescriptorExtension;
 import com.rws.lt.lc.mtsampleapp.transfer.HealthStatus;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.When;
@@ -25,46 +24,26 @@ public class MedatadaTestSteps extends TestStepsBase {
 
     @When("^I get the app descriptor")
     public void getDescriptor() {
-        ResponseEntity<Descriptor> response = getRestTemplate().exchange(getBaseUrl() + "/v1/descriptor", HttpMethod.GET, null, Descriptor.class);
+        ResponseEntity<ObjectNode> response = getRestTemplate().exchange(getBaseUrl() + "/v1/descriptor", HttpMethod.GET, null, ObjectNode.class);
         ScenarioStorage.setLastResponse(response);
     }
 
     @And("The descriptor name should be {string}")
     public void andTheNameIs(String name) {
-        Descriptor descriptor = ScenarioStorage.getLastResponse();
-        assertThat(name, Is.is(descriptor.getName()));
+        ObjectNode descriptor = ScenarioStorage.getLastResponse();
+        assertThat(descriptor.get("name").asText(), Is.is(name));
     }
 
     @And("The descriptor version is {string}")
     public void andTheVersionIsValid(String expectedVersion) {
-        Descriptor descriptor = ScenarioStorage.getLastResponse();
-        assertThat(descriptor.getVersion(), Is.is(expectedVersion));
-    }
-
-    @And("The descriptor baseUrl contains {string}")
-    public void andTheBaseUrlContains(String s) {
-        Descriptor descriptor = ScenarioStorage.getLastResponse();
-        assertThat(descriptor.getBaseUrl(), StringContains.containsString(s));
+        ObjectNode descriptor = ScenarioStorage.getLastResponse();
+        assertThat(descriptor.get("version").asText(), Is.is(expectedVersion));
     }
 
     @And("The descriptor has {int} extensions")
     public void andHasExtensions(int endpointCount) {
-        Descriptor descriptor = ScenarioStorage.getLastResponse();
-        assertThat(descriptor.getExtensions(), IsArrayWithSize.arrayWithSize(endpointCount));
-    }
-
-    @And("Extension {int} has the endpoints")
-    public void andHasEndpoints(int index, DataTable endpointsDatatable) {
-        Descriptor descriptor = ScenarioStorage.getLastResponse();
-        DescriptorExtension extension = descriptor.getExtensions()[0];
-        assertThat(extension.getConfiguration(), IsMapContaining.hasKey("endpoints"));
-        Map<String, String> endpoints = (Map<String, String>) extension.getConfiguration().get("endpoints");
-        Map<String, String> expectedEndpoints = endpointsDatatable.asMap(String.class, String.class);
-        assertThat(endpoints.size(), Is.is(expectedEndpoints.size()));
-
-        for (Map.Entry<String, String> expectedEntry : expectedEndpoints.entrySet()) {
-            assertThat(endpoints, IsMapContaining.hasEntry(expectedEntry.getKey(), expectedEntry.getValue()));
-        }
+        ObjectNode descriptor = ScenarioStorage.getLastResponse();
+        assertThat(descriptor.get("extensions").size(), Is.is(endpointCount));
     }
 
     @When("I get the app health")

@@ -1,7 +1,8 @@
 package com.rws.lt.lc.mtsampleapp.security;
 
+import com.rws.lt.lc.extensibility.security.JWSExtractor;
+import com.rws.lt.lc.extensibility.security.util.RequestLocalContext;
 import com.rws.lt.lc.mtsampleapp.exception.NotAuthorizedException;
-import com.rws.lt.lc.mtsampleapp.util.RequestLocalContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
