@@ -2,8 +2,8 @@ package com.rws.lt.lc.mtsampleapp.logging;
 
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.rws.lt.lc.mtsampleapp.util.LocalContextKeys;
-import com.rws.lt.lc.mtsampleapp.util.RequestLocalContext;
+import com.rws.lt.lc.extensibility.security.util.LocalContextKeys;
+import com.rws.lt.lc.extensibility.security.util.RequestLocalContext;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
