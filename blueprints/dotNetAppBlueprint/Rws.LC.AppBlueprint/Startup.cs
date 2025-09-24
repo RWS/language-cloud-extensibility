@@ -12,6 +12,7 @@ using Rws.LC.AppBlueprint.Exceptions;
 using Rws.LC.AppBlueprint.Helpers;
 using Rws.LC.AppBlueprint.Interfaces;
 using Rws.LC.AppBlueprint.Services;
+using Rws.LC.AppBlueprint.Infrastructure;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -45,6 +46,9 @@ namespace Rws.LC.AppBlueprint
             services.AddSingleton<IAppRegistrationRepository, AppRegistrationRepository>();
             services.AddSingleton<IDescriptorService, DescriptorService>();
             services.AddSingleton<IAccountService, AccountService>();
+
+            services.AddSingleton<LanguageCloudClientFactory>();
+            services.AddTransient<LcHandler>();
 
             // this ensures that the services are started and stopped concurrently
             services.Configure<HostOptions>(options =>
