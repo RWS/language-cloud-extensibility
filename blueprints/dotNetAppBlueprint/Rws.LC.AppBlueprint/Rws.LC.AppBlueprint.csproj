@@ -12,6 +12,7 @@
     <PackageReference Include="MongoDB.Driver" Version="2.23.1" />
     <PackageReference Include="NLog" Version="5.2.8" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.8" />
+    <PackageReference Include="Rws.LanguageCloud.Sdk" Version="2.1.13" />
   </ItemGroup>
 
   <ItemGroup>

@@ -46,6 +46,9 @@ namespace Rws.LC.AppBlueprint
             services.AddSingleton<IDescriptorService, DescriptorService>();
             services.AddSingleton<IAccountService, AccountService>();
 
+            services.AddSingleton<Infrastructure.LanguageCloudClientFactory>();
+            services.AddTransient<Infrastructure.LcHandler>();
+
             // this ensures that the services are started and stopped concurrently
             services.Configure<HostOptions>(options =>
             {
