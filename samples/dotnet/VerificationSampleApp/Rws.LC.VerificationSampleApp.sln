@@ -5,7 +5,12 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rws.LC.VerificationSampleApp", "Rws.LC.VerificationSampleApp\Rws.LC.VerificationSampleApp.csproj", "{4EE985BB-5B32-4953-973F-0A60D394AA95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rws.LC.VerificationSampleApp.Test", "Rws.LC.VerificationSampleApp.Test\Rws.LC.VerificationSampleApp.Test.csproj", "{AABB4130-813D-4302-A2D3-A4AC9038B18B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rws.LC.VerificationSampleApp.Test", "Rws.LC.VerificationSampleApp.Test\Rws.LC.VerificationSampleApp.Test.csproj", "{AABB4130-813D-4302-A2D3-A4AC9038B18B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{274B1797-8D34-44F5-B90F-27A208592AA2}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet.config = NuGet.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
