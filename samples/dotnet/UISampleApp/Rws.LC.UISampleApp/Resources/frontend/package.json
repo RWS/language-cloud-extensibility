@@ -11,7 +11,7 @@
   "author": "RWS",
   "license": "MIT",
   "dependencies": {
-    "@trados/trados-ui-extensibility": "^0.1.4"
+    "@trados/trados-ui-extensibility": "^0.1.7"
   },
   "devDependencies": {
     "ts-loader": "9.5.1",
